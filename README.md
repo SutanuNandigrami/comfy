@@ -1,5 +1,10 @@
-Perfect — here is the **exact, no-confusion, correct order** you should follow.
-This is the **final simplified flow**. Nothing extra.
+# ComfyUI Auto GPU Workflow Launcher
+
+This repository provides a **single universal launcher** that:
+- Detects GPU (T4, P100, 3090, 4090, etc.)
+- Detects environment (Kaggle, Colab, Vast, Local)
+- Automatically selects the correct ComfyUI workflow JSON
+- Launches ComfyUI UI on port 8188
 
 ---
 
@@ -79,9 +84,13 @@ What happens automatically:
 http://localhost:8188
 ```
 
----
+### Vast / RunPod
 
-# 🧠 THAT’S IT — NO MORE STEPS
+```
+http://<public-ip>:8188
+```
+
+### 🧠 THAT’S IT — NO MORE STEPS
 
 
 ---
@@ -98,7 +107,7 @@ http://localhost:8188
 
 ```bash
 git clone https://github.com/SutanuNandigrami/comfy.git
-cd comfyui-auto
+cd comfy
 bash install_comfyui_auto.sh --hf-token=hf_xxxxx
 python launch_auto.py
 ```
