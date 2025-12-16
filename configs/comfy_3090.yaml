@@ -1,0 +1,6 @@
+gpu: RTX3090
+max_resolution: 1344x768
+steps: 35
+sampler: dpmpp_sde_karras
+batch: 1
+animatediff: true

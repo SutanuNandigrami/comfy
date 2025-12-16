@@ -1,0 +1,14 @@
+{
+  "nodes": [
+    { "id": 1, "type": "CheckpointLoaderSimple", "widgets_values": ["realvisxl_v4.safetensors"] },
+    { "id": 2, "type": "EmptyLatentImage", "widgets_values": [1344, 768, 1] },
+    { "id": 3, "type": "CLIPTextEncode", "widgets_values": ["cinematic ultra realistic portrait, rim lighting"] },
+    { "id": 4, "type": "CLIPTextEncode", "widgets_values": ["bad anatomy, low quality"] },
+    { "id": 5, "type": "KSampler", "widgets_values": [35, "dpmpp_sde_karras", "normal", 1, 8.0] },
+    { "id": 6, "type": "VAEDecode" },
+    { "id": 7, "type": "SaveImage", "widgets_values": ["RTX3090"] }
+  ],
+  "links": [
+    [1,0,5,0],[2,0,5,3],[3,0,5,1],[4,0,5,2],[5,0,6,0],[6,0,7,0]
+  ]
+}

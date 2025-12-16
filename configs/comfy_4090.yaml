@@ -1,0 +1,6 @@
+gpu: RTX4090
+max_resolution: 1536x864
+steps: 40
+sampler: dpmpp_sde_karras
+batch: 2
+animatediff: true

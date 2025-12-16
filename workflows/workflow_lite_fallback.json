@@ -1,0 +1,14 @@
+{
+  "nodes": [
+    { "id": 1, "type": "CheckpointLoaderSimple", "widgets_values": ["juggernautXL_v9.safetensors"] },
+    { "id": 2, "type": "EmptyLatentImage", "widgets_values": [768, 768, 1] },
+    { "id": 3, "type": "CLIPTextEncode", "widgets_values": ["simple portrait"] },
+    { "id": 4, "type": "CLIPTextEncode", "widgets_values": ["bad quality"] },
+    { "id": 5, "type": "KSampler", "widgets_values": [20, "euler", "normal", 1, 7.0] },
+    { "id": 6, "type": "VAEDecode" },
+    { "id": 7, "type": "SaveImage", "widgets_values": ["LITE"] }
+  ],
+  "links": [
+    [1,0,5,0],[2,0,5,3],[3,0,5,1],[4,0,5,2],[5,0,6,0],[6,0,7,0]
+  ]
+}

@@ -1,0 +1,6 @@
+gpu: T4
+max_resolution: 1024
+steps: 25
+sampler: dpmpp_2m_karras
+batch: 1
+animatediff: false
