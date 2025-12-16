@@ -1,0 +1,162 @@
+#!/bin/bash
+# =========================================================
+# ComfyUI Auto GPU Detect + Lite/Full Installer (2025)
+# Works on: Kaggle T4 | RTX 3090 | Local | Rented GPUs
+# =========================================================
+
+set -e
+
+# ------------------ ARGUMENTS ------------------
+for arg in "$@"; do
+  case $arg in
+    --hf-token=*) HF_TOKEN="${arg#*=}" ;;
+    *) echo "Unknown argument: $arg"; exit 1 ;;
+  esac
+done
+
+if [[ -z "$HF_TOKEN" ]]; then
+  echo "❌ ERROR: HuggingFace token required (--hf-token=...)"
+  exit 1
+fi
+
+# ------------------ PATHS ------------------
+COMFYUI_DIR=/kaggle/working/ComfyUI
+
+# ------------------ GPU DETECTION ------------------
+echo "=== Detecting GPU ==="
+
+GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader | head -n 1)
+GPU_MEM=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits | head -n 1)
+
+echo "GPU  : $GPU_NAME"
+echo "VRAM : ${GPU_MEM} MB"
+
+INSTALL_MODE="lite"
+MAX_RES=1024
+USE_ANIMATEDIFF=0
+
+if [[ "$GPU_NAME" == *"3090"* ]] || [[ "$GPU_MEM" -ge 22000 ]]; then
+  INSTALL_MODE="full"
+  MAX_RES=1344
+  USE_ANIMATEDIFF=1
+fi
+
+echo "Install mode: $INSTALL_MODE"
+echo "Max resolution: $MAX_RES"
+
+export COMFY_MAX_RES=$MAX_RES
+
+# ------------------ COMFYUI INSTALL ------------------
+echo "=== Installing / Updating ComfyUI ==="
+
+if [[ -d "$COMFYUI_DIR" ]]; then
+  cd "$COMFYUI_DIR"
+  git pull --quiet
+else
+  git clone https://github.com/comfyanonymous/ComfyUI.git "$COMFYUI_DIR"
+  cd "$COMFYUI_DIR"
+fi
+
+# ------------------ TORCH (CUDA 11.8 SAFE) ------------------
+pip install -q torch torchvision torchaudio \
+  --index-url https://download.pytorch.org/whl/cu118
+
+pip install -q xformers
+
+# ------------------ CUSTOM NODES ------------------
+echo "=== Installing Custom Nodes ==="
+cd custom_nodes
+
+NODES=(
+  https://github.com/ltdrdata/ComfyUI-Manager
+  https://github.com/ltdrdata/ComfyUI-Impact-Pack
+  https://github.com/kijai/ComfyUI-KJNodes
+  https://github.com/Fannovel16/comfyui_controlnet_aux
+  https://github.com/cubiq/ComfyUI_IPAdapter_plus
+  https://github.com/pythongosssss/ComfyUI-Custom-Scripts
+  https://github.com/WASasquatch/was-node-suite-comfyui
+  https://github.com/rgthree/rgthree-comfy
+  https://github.com/Gourieff/comfyui-reactor-node
+)
+
+if [[ "$USE_ANIMATEDIFF" == "1" ]]; then
+  NODES+=(https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite)
+  NODES+=(https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved)
+fi
+
+for repo in "${NODES[@]}"; do
+  name="${repo##*/}"
+  if [[ -d "$name" ]]; then
+    (cd "$name" && git pull --quiet)
+  else
+    git clone --quiet --recursive "$repo"
+  fi
+  [[ -f "$name/requirements.txt" ]] && pip install -q -r "$name/requirements.txt"
+done
+
+# ------------------ MODELS ------------------
+echo "=== Downloading Models ($INSTALL_MODE) ==="
+cd ../models
+mkdir -p checkpoints vae controlnet ipadapter loras upscale_models insightface
+
+# ---- CORE CHECKPOINT (ALWAYS) ----
+wget -q --header="Authorization: Bearer $HF_TOKEN" \
+  -O checkpoints/juggernautXL_v9.safetensors \
+  https://huggingface.co/lllyasviel/juggernautXL/resolve/main/juggernautXL_v9.safetensors
+
+# ---- FULL MODE EXTRA CHECKPOINTS ----
+if [[ "$INSTALL_MODE" == "full" ]]; then
+  wget -q --header="Authorization: Bearer $HF_TOKEN" \
+    -O checkpoints/realvisxl_v4.safetensors \
+    https://huggingface.co/SG161222/RealVisXL_V4.0/resolve/main/RealVisXL_V4.0.safetensors
+fi
+
+# ---- VAE ----
+wget -q -O vae/sdxl_vae.safetensors \
+  https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl_vae.safetensors
+
+# ---- CONTROLNET (LITE = 2, FULL = 4) ----
+wget -q -O controlnet/openpose_sdxl.safetensors \
+  https://huggingface.co/thibaud/controlnet-sdxl-openpose/resolve/main/controlnet-openpose-sdxl.safetensors
+
+wget -q -O controlnet/depth_sdxl.safetensors \
+  https://huggingface.co/thibaud/controlnet-sdxl-depth/resolve/main/controlnet-depth-sdxl.safetensors
+
+if [[ "$INSTALL_MODE" == "full" ]]; then
+  wget -q -O controlnet/canny_sdxl.safetensors \
+    https://huggingface.co/thibaud/controlnet-sdxl-canny/resolve/main/controlnet-canny-sdxl.safetensors
+
+  wget -q -O controlnet/lineart_sdxl.safetensors \
+    https://huggingface.co/thibaud/controlnet-sdxl-lineart/resolve/main/controlnet-lineart-sdxl.safetensors
+fi
+
+# ---- IPADAPTER FACEID ----
+wget -q --header="Authorization: Bearer $HF_TOKEN" \
+  -O ipadapter/ip-adapter-faceid-plusv2_sdxl.bin \
+  https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl.bin
+
+wget -q --header="Authorization: Bearer $HF_TOKEN" \
+  -O ipadapter/ip-adapter-faceid_sdxl_lora.safetensors \
+  https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors
+
+# ---- INSIGHTFACE ----
+wget -q -O insightface/buffalo_l.zip \
+  https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip
+unzip -oq insightface/buffalo_l.zip -d insightface
+
+# ---- LORA ----
+wget -q -O loras/add_detail_xl.safetensors \
+  https://huggingface.co/latent-consistency/add-detail-xl/resolve/main/add_detail_xl.safetensors
+
+# ---- UPSCALER ----
+wget -q -O upscale_models/4x-UltraSharp.pth \
+  https://huggingface.co/uwg/upscaler/resolve/main/4x-UltraSharp.pth
+
+# ------------------ DONE ------------------
+echo "================================================"
+echo "✅ ComfyUI READY"
+echo "Mode : $INSTALL_MODE"
+echo "Launch:"
+echo "cd $COMFYUI_DIR && python main.py --listen --force-fp16"
+echo "Kaggle → Open Port 8188"
+echo "================================================"
