@@ -14,7 +14,7 @@ Tested on: Kaggle (T4/P100), Colab, Vast.ai, Local RTX GPUs
 - 📚 **Enhanced Docs** - Quick start guides + config setup
 - 🧹 **Cleaner Codebase** - Removed verification scripts
 
-**See:** `QUICK_START_KAGGLE.md` | `CONFIG_SETUP.md` | `UPDATE_SUMMARY.md`
+**See:** [`docs/QUICK_START_KAGGLE.md`](docs/QUICK_START_KAGGLE.md) | [`docs/CONFIG_SETUP.md`](docs/CONFIG_SETUP.md) | [`docs/UPDATE_SUMMARY.md`](docs/UPDATE_SUMMARY.md)
 
 ---
 
@@ -366,6 +366,29 @@ python launch_auto.py
 
 # Open port 8188 → Generate!
 ```
+
+---
+
+---
+
+## 📚 Documentation
+
+All guides are in the [`docs/`](docs/) directory:
+
+### Quick Start Guides
+- [`docs/QUICK_START_KAGGLE.md`](docs/QUICK_START_KAGGLE.md) - Fast setup for Kaggle
+- [`docs/VAST_AI_GUIDE.md`](docs/VAST_AI_GUIDE.md) - Deploy on Vast.ai servers
+
+### Configuration & Setup
+- [`docs/CONFIG_SETUP.md`](docs/CONFIG_SETUP.md) - Complete configuration guide  
+- [`docs/BEGINNERS_GUIDE.md`](docs/BEGINNERS_GUIDE.md) - AI/ML concepts explained
+
+### Deployment Guides
+- [`docs/KAGGLE_DEPLOYMENT.md`](docs/KAGGLE_DEPLOYMENT.md) - Detailed Kaggle setup
+
+### Updates & Maintenance
+- [`docs/SAFE_UPDATE_GUIDE.md`](docs/SAFE_UPDATE_GUIDE.md) - Safe component updates
+- [`docs/UPDATE_SUMMARY.md`](docs/UPDATE_SUMMARY.md) - Version changelog
 
 ---
 
