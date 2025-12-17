@@ -219,8 +219,8 @@ def create_notebook():
         "source": [
             "# Run with Public Access (via ngrok tunnel)\n",
             "\n",
-            f"!cd {{WORK_DIR}}/{REPO_NAME} && git pull\\n",
-            f"%cd {{WORK_DIR}}/{REPO_NAME}\\n",
+            "!cd {WORK_DIR}/comfy && git pull\n",
+            "%cd {WORK_DIR}/comfy\n",
             f"!export NGROK_AUTHTOKEN={NGROK_AUTHTOKEN} && python launch_with_tunnel.py"
         ]
     })
