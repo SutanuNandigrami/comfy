@@ -62,16 +62,19 @@ def create_notebook():
         "metadata": {},
         "outputs": [],
         "source": [
+            "# Installation (Kaggle paths shown, but installer auto-detects platform)\n",
             "%cd /kaggle/working\n",
             "!rm -rf comfy  # Delete old\n",
             f"!git clone https://github.com/{GITHUB_USER}/{REPO_NAME}.git\n",
             f"%cd {REPO_NAME}\n",
             f"!bash install_comfyui_auto.sh --hf-token={HF_TOKEN if HF_TOKEN != 'your_hf_token_here' else 'YOUR_HF_TOKEN_HERE'}\n",
             "\n",
-            "# Click Run (Play button)\n",
+            "# Platform auto-detection:\n",
+            "#   - Kaggle: Uses /kaggle/working\n",
+            "#   - Colab: Uses /content (auto-detected)\n",
+            "#   - Vast.ai: Uses /workspace or /content\n",
             "\n",
-            "# Wait: First run takes ~10-30 minutes (downloads models)\n",
-            "# Subsequent runs: 1-2 minutes (uses cache!)"
+            "# Wait: First run ~10-30 min, subsequent runs ~1-2 min (cache!)"
         ]
     })
     
