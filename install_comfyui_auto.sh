@@ -306,7 +306,8 @@ else
 fi
 
 # === Install ComfyUI requirements ===
-pip install -q -r ComfyUI/requirements.txt || echo "[WARN] No requirements.txt found"
+pip install -q -r requirements.txt || echo "[WARN] No requirements.txt found"
+
 
 # ------------------ CUSTOM NODES ------------------
 echo "=== Installing Custom Nodes ==="
