@@ -333,15 +333,15 @@
       ],
       "note": "Better Faces LoRA v1.0 - improves facial aesthetics (CivitAI, extracted via browser)"
     },
-    "cinematic_lighting_xl.safetensors": {
-      "url": "https://huggingface.co/artificialguybr/SDXL-LoRA-slider.cinematic-lighting/resolve/main/cinematic%20lighting.safetensors",
-      "auth": "hf",
+    "touch_of_realism_sdxl_v2.safetensors": {
+      "url": "https://civitai.com/api/download/models/138103",
+      "auth": "none",
       "min_size": 23000000,
       "sha256": "IGNORE",
       "modes": [
         "full"
       ],
-      "note": "Cinematic Lighting LoRA slider - enhances cinematic mood (HuggingFace alternative, Touch of Realism unavailable)"
+      "note": "Touch of Realism SDXL V2 - cinematic photorealistic style (CivitAI, extracted via API)"
     }
   }
 }
