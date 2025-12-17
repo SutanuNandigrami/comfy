@@ -208,10 +208,23 @@ fi
 
 echo "=== Applying model manifest ==="
 
+# Export variables for Python script
+export MANIFEST
+export INSTALL_MODE
+export HF_TOKEN
+
 python - << 'EOF'
-import json, os
+import json, os, sys
 
 manifest_path = os.getenv("MANIFEST")
+if not manifest_path:
+    print("ERROR: MANIFEST environment variable not set")
+    sys.exit(1)
+
+if not os.path.exists(manifest_path):
+    print(f"ERROR: Manifest file not found: {manifest_path}")
+    sys.exit(1)
+
 manifest = json.load(open(manifest_path))
 install_mode = os.getenv("INSTALL_MODE", "lite")
 hf_token = os.getenv("HF_TOKEN", "")
