@@ -102,18 +102,18 @@ fetch_model () {
   mkdir -p "$cache_dir" "$target_dir"
 
   if [[ "$REFRESH_MODELS" == "1" ]]; then
-    echo "[CACHE] Refresh forced → removing $name"
+    echo "[CACHE] Refresh forced - removing $name"
     rm -f "$cache_file"
   fi
 
   if [[ -f "$cache_file" ]]; then
     size=$(stat -c%s "$cache_file" || echo 0)
     if [[ "$size" -lt "$min_size" ]]; then
-      echo "[CACHE] Corrupt (size) → deleting $name"
+      echo "[CACHE] Corrupt (size) - deleting $name"
       rm -f "$cache_file"
     elif [[ "$sha" != "IGNORE" ]]; then
       echo "$sha  $cache_file" | sha256sum -c - || {
-        echo "[CACHE] Corrupt (hash) → deleting $name"
+        echo "[CACHE] Corrupt (hash) - deleting $name"
         rm -f "$cache_file"
       }
     fi
@@ -373,7 +373,7 @@ fi
 
 # Check active config symlink
 if [[ -L "$COMFYUI_DIR/active_config.yaml" ]]; then
-  echo "✅ Config symlink: OK → $CONFIG_FILE"
+  echo "✅ Config symlink: OK - $CONFIG_FILE"
 else
   echo "⚠️ Config symlink: MISSING (non-critical)"
 fi
