@@ -24,7 +24,9 @@ def detect_gpu():
         if not output:
             return "t4", 0  # Default to T4 if no output
         
-        name, mem_str = output.split(",", 1)
+        # Handle multiple GPUs - use first line only
+        first_line = output.split('\n')[0]
+        name, mem_str = first_line.split(",", 1)
         name = name.strip()
         mem_mb = int(mem_str.strip().replace(" MiB", ""))
         
@@ -165,14 +167,10 @@ def main():
     ]
     
     # Add workflow if found
-    if workflow_path:
-        # Make path relative to ComfyUI directory
-        rel_workflow = os.path.relpath(workflow_path, comfyui_dir)
-        args.extend(["--workflow", rel_workflow])
     
     print(f"\n🚀 Launching ComfyUI...")
     print(f"  Directory  : {comfyui_dir}")
-    print(f"  Workflow   : {workflow_path}")
+    print(f"  Workflow   : {workflow_path or 'Load from UI'}")
     print(f"  Port       : 8188")
     print(f"  Command    : {' '.join(args)}")
     print("=" * 60)
