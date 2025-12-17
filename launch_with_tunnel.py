@@ -20,6 +20,25 @@ except ImportError:
     COMFYUI_PORT = int(os.getenv("COMFYUI_PORT", "8188"))
     print("[INFO] Using environment variables for config")
 
+def detect_platform():
+    """
+    Detect platform (Kaggle vs Colab/Vast.ai)
+    Returns work directory path
+    """
+    if os.path.isdir("/kaggle"):
+        return "/kaggle/working"
+    else:
+        work_dir = os.getenv("WORK_DIR")
+        if work_dir:
+            return work_dir
+        if os.path.isdir("/workspace"):
+            return "/workspace"
+        else:
+            return "/content"
+
+# Detect platform
+WORK_DIR = detect_platform()
+
 def cleanup_port():
     """Kill any process using port 8188"""
     print(f"\n🧹 Cleaning up port {COMFYUI_PORT}...")
@@ -39,7 +58,7 @@ def start_comfyui():
     """Start ComfyUI in background using nohup (Kaggle-proven method)"""
     print("\n🚀 Starting ComfyUI...")
     
-    comfyui_dir = "/kaggle/working/ComfyUI"
+    comfyui_dir = f"{WORK_DIR}/ComfyUI"
     if not os.path.exists(comfyui_dir):
         print(f"❌ ComfyUI not found at {comfyui_dir}")
         print(f"💡 Run the installer first: bash install_comfyui_auto.sh")

@@ -9,6 +9,30 @@ import sys
 import yaml
 
 
+def detect_platform():
+    """
+    Detect platform (Kaggle vs Colab/Vast.ai)
+    Returns work directory path
+    """
+    if os.path.isdir("/kaggle"):
+        return "/kaggle/working"
+    else:
+        # Colab, Vast.ai, or local
+        # Check environment variable first
+        work_dir = os.getenv("WORK_DIR")
+        if work_dir:
+            return work_dir
+        # Default fallbacks
+        if os.path.isdir("/workspace"):
+            return "/workspace"
+        else:
+            return "/content"
+
+
+# Detect platform once at module level
+WORK_DIR = detect_platform()
+
+
 def detect_gpu():
     """
     Unified GPU detection - returns tier name and VRAM in MB
@@ -52,9 +76,7 @@ def detect_comfyui():
     Checks common locations in order
     """
     search_paths = [
-        "/kaggle/working/ComfyUI",
-        "/content/ComfyUI",
-        "/workspace/ComfyUI",
+        f"{WORK_DIR}/ComfyUI",
         "./ComfyUI",
         "../ComfyUI"
     ]
@@ -80,7 +102,7 @@ def load_config(tier):
     config_paths = [
         f"configs/comfy_{tier}.yaml",
         f"../comfy/configs/comfy_{tier}.yaml",
-        f"/kaggle/working/comfy/configs/comfy_{tier}.yaml"
+        f"{WORK_DIR}/comfy/configs/comfy_{tier}.yaml"
     ]
     
     for config_path in config_paths:
@@ -109,7 +131,7 @@ def find_workflow(tier):
     search_paths = [
         f"workflows/{workflow_name}",
         f"../comfy/workflows/{workflow_name}",
-        f"/kaggle/working/comfy/workflows/{workflow_name}"
+        f"{WORK_DIR}/comfy/workflows/{workflow_name}"
     ]
     
     for wf_path in search_paths:

@@ -8,6 +8,20 @@ import os
 import yaml
 from typing import Tuple, Optional, Dict
 
+# Platform detection
+def _detect_platform():
+    """Detect work directory based on platform"""
+    if os.path.isdir("/kaggle"):
+        return "/kaggle/working"
+    work_dir = os.getenv("WORK_DIR")
+    if work_dir:
+        return work_dir
+    if os.path.isdir("/workspace"):
+        return "/workspace"
+    return "/content"
+
+WORK_DIR = _detect_platform()
+
 
 def detect_gpu() -> Tuple[str, int]:
     """
@@ -77,7 +91,7 @@ def load_gpu_config(tier: str, search_paths: Optional[list] = None) -> Optional[
         search_paths = [
             "configs",
             "../comfy/configs",
-            "/kaggle/working/comfy/configs"
+            f"{WORK_DIR}/comfy/configs"
         ]
     
     config_filename = f"comfy_{tier}.yaml"
