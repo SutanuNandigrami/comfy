@@ -251,8 +251,11 @@ echo "=== Applying model manifest ==="
 # Export variables for Python script (INSTALL_MODE now set)
 export HF_TOKEN
 
+
 python - << 'EOF'
 import json, os, sys
+import subprocess
+from pathlib import Path
 
 manifest_path = os.getenv("MANIFEST")
 if not manifest_path:
@@ -266,28 +269,109 @@ if not os.path.exists(manifest_path):
 manifest = json.load(open(manifest_path))
 install_mode = os.getenv("INSTALL_MODE", "lite")
 hf_token = os.getenv("HF_TOKEN", "")
+cache_root = "/kaggle/working/model-cache"
+
+# Category to directory mapping
+category_dirs = {
+    "checkpoints": "models/checkpoints",
+    "vae": "models/vae",
+    "controlnet": "models/controlnet",
+    "ipadapter": "models/ipadapter",
+    "loras": "models/loras",
+    "upscale_models": "models/upscale_models",
+    "insightface": "models/insightface/models"
+}
+
+def download_model(name, url, target_dir, auth_header="", min_size=1000000):
+    """Download model with caching and validation"""
+    cache_file = f"{cache_root}/{name}"
+    final_path = f"{target_dir}/{name}"
+    
+    # Create directories
+    os.makedirs(cache_root, exist_ok=True)
+    os.makedirs(target_dir, exist_ok=True)
+    
+    # Check if already cached and valid
+    if os.path.exists(cache_file):
+        size = os.path.getsize(cache_file)
+        if size >= min_size:
+            print(f"[CACHED] {name} ({size} bytes)")
+            # Create symlink if doesn't exist
+            if not os.path.exists(final_path):
+                try:
+                    os.symlink(cache_file, final_path)
+                except:
+                    import shutil
+                    shutil.copy2(cache_file, final_path)
+            return True
+    
+    # Download
+    print(f"[DOWNLOAD] {name}")
+    wget_cmd = ["wget", "-q", "--show-progress", "-O", cache_file, url]
+    
+    if auth_header:
+        wget_cmd.insert(1, f"--header={auth_header}")
+    
+    try:
+        result = subprocess.run(wget_cmd, check=True, capture_output=False)
+        
+        # Validate size
+        size = os.path.getsize(cache_file)
+        if size < min_size:
+            print(f"[ERROR] {name} too small ({size} bytes), expected >{min_size}")
+            os.remove(cache_file)
+            return False
+        
+        # Create symlink
+        if not os.path.exists(final_path):
+            try:
+                os.symlink(cache_file, final_path)
+            except:
+                import shutil
+                shutil.copy2(cache_file, final_path)
+        
+        print(f"[OK] {name} ({size} bytes)")
+        return True
+        
+    except subprocess.CalledProcessError as e:
+        print(f"[ERROR] Failed to download {name}: {e}")
+        if os.path.exists(cache_file):
+            os.remove(cache_file)
+        return False
+
+# Process all models
+downloaded = 0
+skipped = 0
+failed = 0
 
 for category, models in manifest.items():
+    target_dir = category_dirs.get(category, f"models/{category}")
+    
     for name, meta in models.items():
-        # Filter by mode
-        if install_mode not in meta.get("modes", ["lite", "full"]):
+        modes = meta.get("modes", [])
+        if install_mode not in modes:
             print(f"[SKIP] {name} (not in {install_mode} mode)")
+            skipped += 1
             continue
         
-        # Prepare auth header
+        url = meta["url"]
+        auth = meta.get("auth", "none")
+        min_size = meta.get("min_size", 1000000)
+        
+        # Build auth header
         auth_header = ""
-        if meta.get("auth") == "hf_token" and hf_token:
-            auth_header = f'Authorization: Bearer {hf_token}'
+        if auth == "hf" and hf_token:
+            auth_header = f"Authorization: Bearer {hf_token}"
         
-        # Call fetch_model
-        cmd = (
-            f'fetch_model "{category}" "{name}" "{meta["url"]}" '
-            f'"{meta.get("sha256", "IGNORE")}" {meta["min_size"]} '
-            f'"{auth_header}"'
-        )
-        
-        os.system(f"bash -c '{cmd}'")
+        # Download
+        if download_model(name, url, target_dir, auth_header, min_size):
+            downloaded += 1
+        else:
+            failed += 1
+
+print(f"\n✅ Model downloads complete: {downloaded} downloaded, {skipped} skipped, {failed} failed")
 EOF
+
 
 # Create symlink to active config (now after mode set, but before ComfyUI install)
 ln -sf "$CONFIG_PATH" "$COMFYUI_DIR/active_config.yaml" 2>/dev/null || true

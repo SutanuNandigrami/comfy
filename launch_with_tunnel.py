@@ -131,17 +131,15 @@ def create_tunnel():
     for line in tunnel_process.stdout:
         print(line.strip())
         
-        # Look for the tunnel URL
-        if 'trycloudflare.com' in line or 'https://' in line:
-            # Extract URL
-            parts = line.split()
-            for part in parts:
-                if 'https://' in part:
-                    url = part.strip()
-                    break
-            if url:
+        # Look for the actual tunnel URL (ends with .trycloudflare.com)
+        if '.trycloudflare.com' in line and 'https://' in line:
+            # Extract URL - it typically looks like: https://random-name-1234.trycloudflare.com
+            import re
+            match = re.search(r'https://[\w-]+\.trycloudflare\.com', line)
+            if match:
+                url = match.group(0)
                 break
-    
+        
     if url:
         print("\n" + "=" * 60)
         print("✅ TUNNEL CREATED SUCCESSFULLY!")
