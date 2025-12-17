@@ -21,6 +21,7 @@ REFRESH_MODELS=0
 for arg in "$@"; do
   case $arg in
     --hf-token=*) HF_TOKEN="${arg#*=}" ;;
+    --civitai-token=*) CIVITAI_API_TOKEN="${arg#*=}" ;;
     --refresh-models) REFRESH_MODELS=1 ;;
     *)
       echo "Unknown argument: $arg"
@@ -34,14 +35,22 @@ if [[ -z "$HF_TOKEN" ]]; then
   exit 1
 fi
 
+if [[ -z "$CIVITAI_API_TOKEN" ]]; then
+  echo "⚠️  WARNING: --civitai-token not provided, CivitAI downloads may fail"
+fi
+
 # ==========================================================
 # === PLATFORM DETECTION & PATHS ===========================
 # ==========================================================
-# Auto-detect Kaggle vs Colab and set appropriate paths
+# Auto-detect platform and set appropriate paths
 if [[ -d "/kaggle" ]]; then
   # Running on Kaggle
   PLATFORM="kaggle"
   WORK_DIR="/kaggle/working"
+elif [[ -d "/workspace" ]]; then
+  # Running on Vast.AI
+  PLATFORM="vast"
+  WORK_DIR="/workspace"
 else
   # Running on Colab or other platform
   PLATFORM="colab"
@@ -76,7 +85,7 @@ echo "=== Stabilizing Python environment ==="
 pip uninstall -y torch torchvision torchaudio xformers numpy protobuf 2>/dev/null || true
 
 pip install -q \
-  torch==2.6.0 \
+  torch==2.9.1 \
   torchvision==0.21.0 \
   torchaudio==2.6.0 \
   --index-url https://download.pytorch.org/whl/cu118 \
@@ -263,6 +272,7 @@ echo "=== Applying model manifest ==="
 
 # Export variables for Python script (INSTALL_MODE now set)
 export HF_TOKEN
+export CIVITAI_API_TOKEN
 export WORK_DIR
 
 
@@ -283,6 +293,7 @@ if not os.path.exists(manifest_path):
 manifest = json.load(open(manifest_path))
 install_mode = os.getenv("INSTALL_MODE", "lite")
 hf_token = os.getenv("HF_TOKEN", "")
+civitai_token = os.getenv("CIVITAI_API_TOKEN", "")
 work_dir = os.getenv("WORK_DIR", "/content")
 cache_root = f"{work_dir}/model-cache"
 
@@ -293,8 +304,13 @@ category_dirs = {
     "controlnet": "models/controlnet",
     "ipadapter": "models/ipadapter",
     "loras": "models/loras",
+    "loras_style": "models/loras",  # Style LoRAs go to main loras folder
+    "loras_nsfw": "models/loras",   # NSFW LoRAs go to main loras folder
     "upscale_models": "models/upscale_models",
-    "insightface": "models/insightface/models"
+    "insightface": "models/insightface/models",
+    "animatediff": "models/animatediff",
+    "checkpoints_sd15": "models/checkpoints",  # SD1.5 checkpoints go to main checkpoints
+    "video": "models/checkpoints"  # Video models (SVD) go to checkpoints
 }
 
 def download_model(name, url, target_dir, auth_header="", min_size=1000000):
@@ -324,8 +340,16 @@ def download_model(name, url, target_dir, auth_header="", min_size=1000000):
     print(f"[DOWNLOAD] {name}")
     wget_cmd = ["wget", "-q", "--show-progress", "-O", cache_file, url]
     
+    # Add authentication headers
     if auth_header:
         wget_cmd.insert(1, f"--header={auth_header}")
+    elif "civitai.com" in url and civitai_token:
+        # CivitAI requires token in URL parameter, not header
+        if "?" in url:
+            url = f"{url}&token={civitai_token}"
+        else:
+            url = f"{url}?token={civitai_token}"
+        wget_cmd[-1] = url  # Update URL in command
     
     try:
         result = subprocess.run(wget_cmd, check=True, capture_output=False)
@@ -449,6 +473,28 @@ for repo in "${NODES[@]}"; do
   fi
   [[ -f "$name/requirements.txt" ]] && pip install -q -r "$name/requirements.txt"
 done
+
+# ------------------ DEPLOY WORKFLOWS ------------------
+echo "=== Deploying Workflows ==="
+WORKFLOWS_SRC="$(dirname "$0")/workflows"
+WORKFLOWS_DEST="$COMFYUI_DIR/user/default/workflows"
+
+if [[ -d "$WORKFLOWS_SRC" ]]; then
+  mkdir -p "$WORKFLOWS_DEST"
+  
+  # Copy all workflow JSON files
+  WORKFLOW_COUNT=$(find "$WORKFLOWS_SRC" -name "*.json" | wc -l)
+  
+  if [[ $WORKFLOW_COUNT -gt 0 ]]; then
+    cp "$WORKFLOWS_SRC"/*.json "$WORKFLOWS_DEST"/
+    echo "✅ Deployed $WORKFLOW_COUNT workflows to ComfyUI"
+    echo "   Location: $WORKFLOWS_DEST"
+  else
+    echo "⚠️  No workflow files found in "$WORKFLOWS_SRC""
+  fi
+else
+  echo "⚠️  Workflows directory not found: "$WORKFLOWS_SRC""
+fi
 
 # === Models managed by manifest (see lines 121-146) ===
 echo "✅ Models loaded via manifest system"

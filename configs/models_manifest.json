@@ -1,7 +1,7 @@
 {
   "checkpoints": {
-    "juggernautXL_v9.safetensors": {
-      "url": "https://huggingface.co/lllyasviel/juggernautXL/resolve/main/juggernautXL_v9.safetensors",
+    "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors": {
+      "url": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9/resolve/main/Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
       "auth": "hf",
       "min_size": 6000000000,
       "sha256": "IGNORE",
@@ -55,8 +55,8 @@
         "full"
       ]
     },
-    "counterfeitxl_v10.safetensors": {
-      "url": "https://huggingface.co/gsdf/Counterfeit-XL/resolve/main/CounterfeitXL_v1.0.safetensors",
+    "CounterfeitXL-V1.0.safetensors": {
+      "url": "https://huggingface.co/gsdf/CounterfeitXL/resolve/main/CounterfeitXL-V1.0.safetensors",
       "auth": "hf",
       "min_size": 6000000000,
       "sha256": "IGNORE",
@@ -89,9 +89,9 @@
   },
   "controlnet": {
     "openpose_sdxl.safetensors": {
-      "url": "https://huggingface.co/thibaud/controlnet-sdxl-openpose/resolve/main/controlnet-openpose-sdxl.safetensors",
-      "auth": "hf",
-      "min_size": 2400000000,
+      "url": "https://huggingface.co/thibaud/controlnet-openpose-sdxl-1.0/resolve/main/diffusion_pytorch_model.fp16.safetensors",
+      "auth": "none",
+      "min_size": 1200000000,
       "sha256": "IGNORE",
       "modes": [
         "lite",
@@ -99,9 +99,9 @@
       ]
     },
     "depth_sdxl.safetensors": {
-      "url": "https://huggingface.co/thibaud/controlnet-sdxl-depth/resolve/main/controlnet-depth-sdxl.safetensors",
-      "auth": "hf",
-      "min_size": 2400000000,
+      "url": "https://huggingface.co/diffusers/controlnet-depth-sdxl-1.0/resolve/main/diffusion_pytorch_model.fp16.safetensors",
+      "auth": "none",
+      "min_size": 1200000000,
       "sha256": "IGNORE",
       "modes": [
         "lite",
@@ -109,18 +109,18 @@
       ]
     },
     "canny_sdxl.safetensors": {
-      "url": "https://huggingface.co/thibaud/controlnet-sdxl-canny/resolve/main/controlnet-canny-sdxl.safetensors",
-      "auth": "hf",
-      "min_size": 2400000000,
+      "url": "https://huggingface.co/diffusers/controlnet-canny-sdxl-1.0/resolve/main/diffusion_pytorch_model.fp16.safetensors",
+      "auth": "none",
+      "min_size": 1200000000,
       "sha256": "IGNORE",
       "modes": [
         "full"
       ]
     },
     "lineart_sdxl.safetensors": {
-      "url": "https://huggingface.co/thibaud/controlnet-sdxl-lineart/resolve/main/controlnet-lineart-sdxl.safetensors",
-      "auth": "hf",
-      "min_size": 2400000000,
+      "url": "https://huggingface.co/TheMistoAI/MistoLine/resolve/main/SDXL/controlnet-sd-xl-1.0-softedge-dexined.safetensors",
+      "auth": "none",
+      "min_size": 1200000000,
       "sha256": "IGNORE",
       "modes": [
         "full"
