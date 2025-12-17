@@ -1,0 +1,308 @@
+{
+  "checkpoints": {
+    "juggernautXL_v9.safetensors": {
+      "url": "https://huggingface.co/lllyasviel/juggernautXL/resolve/main/juggernautXL_v9.safetensors",
+      "auth": "hf_token",
+      "min_size": 6000000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "lite",
+        "full"
+      ]
+    },
+    "realvisxl_v4.safetensors": {
+      "url": "https://huggingface.co/SG161222/RealVisXL_V4.0/resolve/main/RealVisXL_V4.0.safetensors",
+      "auth": "hf_token",
+      "min_size": 6000000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ]
+    },
+    "sd_xl_base_1.0.safetensors": {
+      "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors",
+      "auth": "hf_token",
+      "min_size": 6000000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ]
+    },
+    "sd_xl_refiner_1.0.safetensors": {
+      "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0/resolve/main/sd_xl_refiner_1.0.safetensors",
+      "auth": "hf_token",
+      "min_size": 6000000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ]
+    },
+    "dreamshaperXL_v21TurboDPMSDE.safetensors": {
+      "url": "https://huggingface.co/Lykon/dreamshaper-xl-v2-turbo/resolve/main/DreamShaperXL_Turbo_v2_1.safetensors",
+      "auth": "none",
+      "min_size": 6000000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ]
+    },
+    "animagineXLV31.safetensors": {
+      "url": "https://huggingface.co/cagliostrolab/animagine-xl-3.1/resolve/main/animagine-xl-3.1.safetensors",
+      "auth": "none",
+      "min_size": 6000000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ]
+    },
+    "counterfeitxl_v10.safetensors": {
+      "url": "https://huggingface.co/gsdf/Counterfeit-XL/resolve/main/CounterfeitXL_v1.0.safetensors",
+      "auth": "none",
+      "min_size": 6000000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ]
+    },
+    "sdxl_inpainting.safetensors": {
+      "url": "https://huggingface.co/diffusers/stable-diffusion-xl-1.0-inpainting-0.1/resolve/main/sd_xl_base_1.0_inpainting_0.1.safetensors",
+      "auth": "none",
+      "min_size": 6000000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "Essential for inpainting workflows - fix/edit parts of images"
+    }
+  },
+  "vae": {
+    "sdxl_vae.safetensors": {
+      "url": "https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl_vae.safetensors",
+      "auth": "none",
+      "min_size": 300000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "lite",
+        "full"
+      ]
+    }
+  },
+  "controlnet": {
+    "openpose_sdxl.safetensors": {
+      "url": "https://huggingface.co/thibaud/controlnet-sdxl-openpose/resolve/main/controlnet-openpose-sdxl.safetensors",
+      "auth": "none",
+      "min_size": 2400000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "lite",
+        "full"
+      ]
+    },
+    "depth_sdxl.safetensors": {
+      "url": "https://huggingface.co/thibaud/controlnet-sdxl-depth/resolve/main/controlnet-depth-sdxl.safetensors",
+      "auth": "none",
+      "min_size": 2400000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "lite",
+        "full"
+      ]
+    },
+    "canny_sdxl.safetensors": {
+      "url": "https://huggingface.co/thibaud/controlnet-sdxl-canny/resolve/main/controlnet-canny-sdxl.safetensors",
+      "auth": "none",
+      "min_size": 2400000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ]
+    },
+    "lineart_sdxl.safetensors": {
+      "url": "https://huggingface.co/thibaud/controlnet-sdxl-lineart/resolve/main/controlnet-lineart-sdxl.safetensors",
+      "auth": "none",
+      "min_size": 2400000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ]
+    },
+    "tile_sdxl.safetensors": {
+      "url": "https://huggingface.co/xinsir/controlnet-tile-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors",
+      "auth": "none",
+      "min_size": 2400000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "Essential for coherent upscaling workflows"
+    }
+  },
+  "ipadapter": {
+    "ip-adapter-faceid-plusv2_sdxl.bin": {
+      "url": "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl.bin",
+      "auth": "hf_token",
+      "min_size": 800000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "lite",
+        "full"
+      ]
+    },
+    "ip-adapter-faceid_sdxl_lora.safetensors": {
+      "url": "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors",
+      "auth": "hf_token",
+      "min_size": 250000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "lite",
+        "full"
+      ]
+    },
+    "ip-adapter-plus_sdxl_vit-h.safetensors": {
+      "url": "https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors",
+      "auth": "none",
+      "min_size": 800000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ]
+    },
+    "ip-adapter_sdxl.safetensors": {
+      "url": "https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter_sdxl.safetensors",
+      "auth": "none",
+      "min_size": 450000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ]
+    }
+  },
+  "loras": {
+    "add_detail_xl.safetensors": {
+      "url": "https://huggingface.co/latent-consistency/add-detail-xl/resolve/main/add_detail_xl.safetensors",
+      "auth": "none",
+      "min_size": 100000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "lite",
+        "full"
+      ]
+    },
+    "better_faces_xl_v1.safetensors": {
+      "url": "https://civitai.com/api/download/models/132199",
+      "auth": "none",
+      "min_size": 140000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "Better Faces LoRA for SDXL - improves facial aesthetics"
+    },
+    "face_helper_sdxl_v1.safetensors": {
+      "url": "https://huggingface.co/0x4BID/face-helper/resolve/main/face-helper-xl-v1.safetensors",
+      "auth": "none",
+      "min_size": 120000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "Face Helper - realistic faces in close-ups"
+    },
+    "skin_detail_xl_v1.safetensors": {
+      "url": "https://civitai.com/api/download/models/217782",
+      "auth": "none",
+      "min_size": 140000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "Skin detail with natural blemishes and texture"
+    },
+    "cinematic_lighting_xl.safetensors": {
+      "url": "https://huggingface.co/artificialguybr/SDXL-LoRA-slider.cinematic-lighting/resolve/main/SDXL-LoRA-slider.cinematic-lighting.safetensors",
+      "auth": "none",
+      "min_size": 50000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "Cinematic lighting slider LoRA"
+    },
+    "lcm_lora_sdxl.safetensors": {
+      "url": "https://huggingface.co/latent-consistency/lcm-lora-sdxl/resolve/main/pytorch_lora_weights.safetensors",
+      "auth": "none",
+      "min_size": 200000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "lite",
+        "full"
+      ],
+      "note": "LCM LoRA - enables 4-8 step generation (10x faster)"
+    }
+  },
+  "upscale_models": {
+    "4x-UltraSharp.pth": {
+      "url": "https://huggingface.co/uwg/upscaler/resolve/main/4x-UltraSharp.pth",
+      "auth": "none",
+      "min_size": 60000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "lite",
+        "full"
+      ]
+    },
+    "4x-AnimeSharp.pth": {
+      "url": "https://huggingface.co/Kim2091/AnimeSharp/resolve/main/4x-AnimeSharp.pth",
+      "auth": "none",
+      "min_size": 60000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "Optimized for anime content"
+    },
+    "RealESRGAN_x4plus.pth": {
+      "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth",
+      "auth": "none",
+      "min_size": 60000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "General purpose 4x upscaler"
+    },
+    "RealESRGAN_x4plus_anime_6B.pth": {
+      "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.4/RealESRGAN_x4plus_anime_6B.pth",
+      "auth": "none",
+      "min_size": 17000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "Optimized for anime content"
+    },
+    "SwinIR_4x.pth": {
+      "url": "https://huggingface.co/LykosAI/Upscalers/resolve/main/4x/SwinIR/SwinIR_4x.pth",
+      "auth": "none",
+      "min_size": 140000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "Swin Transformer based upscaler"
+    }
+  },
+  "insightface": {
+    "buffalo_l.zip": {
+      "url": "https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip",
+      "auth": "none",
+      "min_size": 400000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "lite",
+        "full"
+      ],
+      "post_download": "unzip -oq \"$cache_file\" -d \"$cache_dir\""
+    }
+  }
+}

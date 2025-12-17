@@ -1,58 +1,193 @@
+#!/usr/bin/env python3
+"""
+ComfyUI Auto Launcher
+Detects GPU tier and launches ComfyUI with the appropriate workflow and configuration
+"""
+import os
+import subprocess
+import sys
+import yaml
 
----
 
-# 🚀 launch_auto.py (FULL, FINAL)
+def detect_gpu():
+    """
+    Unified GPU detection - returns tier name and VRAM in MB
+    Tier priority: 4090 > 3090 > P100 > T4 (default)
+    """
+    try:
+        output = subprocess.check_output([
+            "nvidia-smi",
+            "--query-gpu=name,memory.total",
+            "--format=csv,noheader"
+        ]).decode().strip()
+        
+        if not output:
+            return "t4", 0  # Default to T4 if no output
+        
+        name, mem_str = output.split(",", 1)
+        name = name.strip()
+        mem_mb = int(mem_str.strip().replace(" MiB", ""))
+        
+        # Unified tier detection (matches installer logic)
+        if "4090" in name or mem_mb >= 24000:
+            return "4090", mem_mb
+        elif "3090" in name or mem_mb >= 22000:
+            return "3090", mem_mb
+        elif "P100" in name:
+            return "p100", mem_mb
+        else:  # T4 or unknown - default to T4
+            return "t4", mem_mb
+            
+    except Exception as e:
+        print(f"⚠️ GPU detection failed: {e}")
+        print("Defaulting to T4 profile")
+        return "t4", 0
 
-```python
-import os, subprocess, requests
-
-GITHUB_RAW = "https://raw.githubusercontent.com/YOURNAME/comfyui-auto/main"
-WORKFLOW_DIR = "workflows"
 
 def detect_comfyui():
-    for p in ["/kaggle/working/ComfyUI", "/content/ComfyUI", "/workspace/ComfyUI", "./ComfyUI"]:
-        if os.path.exists(p):
-            return p
-    raise RuntimeError("ComfyUI not found")
+    """
+    Find ComfyUI installation directory
+    Checks common locations in order
+    """
+    search_paths = [
+        "/kaggle/working/ComfyUI",
+        "/content/ComfyUI",
+        "/workspace/ComfyUI",
+        "./ComfyUI",
+        "../ComfyUI"
+    ]
+    
+    for path in search_paths:
+        if os.path.exists(path) and os.path.isdir(path):
+            print(f"✅ Found ComfyUI: {path}")
+            return os.path.abspath(path)
+    
+    raise RuntimeError(
+        "❌ ComfyUI not found!\n"
+        "Searched: " + ", ".join(search_paths) + "\n"
+        "Run install_comfyui_auto.sh first."
+    )
 
-COMFYUI_DIR = detect_comfyui()
-os.makedirs(WORKFLOW_DIR, exist_ok=True)
 
-def gpu_info():
+def load_config(tier):
+    """
+    Load GPU-specific config YAML
+    Returns config dict or None if not found
+    """
+    # Try to find config file
+    config_paths = [
+        f"configs/comfy_{tier}.yaml",
+        f"../comfy/configs/comfy_{tier}.yaml",
+        f"/kaggle/working/comfy/configs/comfy_{tier}.yaml"
+    ]
+    
+    for config_path in config_paths:
+        if os.path.exists(config_path):
+            try:
+                with open(config_path, 'r') as f:
+                    config = yaml.safe_load(f)
+                print(f"✅ Loaded config: {config_path}")
+                return config
+            except Exception as e:
+                print(f"⚠️ Failed to load config: {e}")
+                return None
+    
+    print(f"⚠️ Config not found for tier: {tier}")
+    return None
+
+
+def find_workflow(tier):
+    """
+    Find workflow JSON file for GPU tier
+    Uses local files first, no network download
+    """
+    workflow_name = f"workflow_{tier}.json"
+    
+    # Search paths for workflow
+    search_paths = [
+        f"workflows/{workflow_name}",
+        f"../comfy/workflows/{workflow_name}",
+        f"/kaggle/working/comfy/workflows/{workflow_name}"
+    ]
+    
+    for wf_path in search_paths:
+        if os.path.exists(wf_path):
+            print(f"✅ Found workflow: {wf_path}")
+            return os.path.abspath(wf_path)
+    
+    # Fallback to lite_fallback if tier-specific not found
+    if tier != "lite_fallback":
+        print(f"⚠️ Workflow not found: {workflow_name}, trying fallback...")
+        return find_workflow("lite_fallback")
+    
+    raise FileNotFoundError(
+        f"❌ Workflow not found: {workflow_name}\n"
+        f"Searched: {', '.join(search_paths)}"
+    )
+
+
+def main():
+    print("=" * 60)
+    print("ComfyUI Auto Launcher")
+    print("=" * 60)
+    
+    # Detect GPU
+    tier, vram_mb = detect_gpu()
+    vram_gb = vram_mb / 1024 if vram_mb > 0 else 0
+    
+    print(f"\n📊 GPU Detection:")
+    print(f"  Tier       : {tier.upper()}")
+    print(f"  VRAM       : {vram_gb:.1f} GB ({vram_mb} MB)")
+    
+    # Load config
+    config = load_config(tier)
+    
+    if config:
+        print(f"\n⚙️ Configuration:")
+        print(f"  Resolution : {config.get('max_resolution', 'default')}")
+        print(f"  Steps      : {config.get('steps', 'default')}")
+        print(f"  Sampler    : {config.get('sampler', 'default')}")
+        print(f"  Batch      : {config.get('batch', 1)}")
+        print(f"  AnimateDiff: {config.get('animatediff', False)}")
+    
+    # Find ComfyUI
+    comfyui_dir = detect_comfyui()
+    
+    # Find workflow
+    workflow_path = find_workflow(tier)
+    
+    # Build launch arguments
+    args = [
+        "python", "main.py",
+        "--listen",
+        "--port", "8188",
+        "--force-fp16"
+    ]
+    
+    # Add workflow if found
+    if workflow_path:
+        # Make path relative to ComfyUI directory
+        rel_workflow = os.path.relpath(workflow_path, comfyui_dir)
+        args.extend(["--workflow", rel_workflow])
+    
+    print(f"\n🚀 Launching ComfyUI...")
+    print(f"  Directory  : {comfyui_dir}")
+    print(f"  Workflow   : {workflow_path}")
+    print(f"  Port       : 8188")
+    print(f"  Command    : {' '.join(args)}")
+    print("=" * 60)
+    print()
+    
+    # Change to ComfyUI directory
+    os.chdir(comfyui_dir)
+    
+    # Launch ComfyUI
     try:
-        out = subprocess.check_output(
-            ["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"]
-        ).decode().split("\n")[0]
-        name, mem = out.split(",")
-        return name.strip(), int(mem.replace(" MiB", ""))
-    except:
-        return "CPU", 0
+        os.execvp("python", args)
+    except Exception as e:
+        print(f"❌ Failed to launch ComfyUI: {e}")
+        sys.exit(1)
 
-gpu, vram = gpu_info()
 
-if "4090" in gpu or vram >= 24000:
-    profile = "4090"
-elif "3090" in gpu or vram >= 22000:
-    profile = "3090"
-elif "P100" in gpu:
-    profile = "p100"
-elif "T4" in gpu or vram <= 16000:
-    profile = "t4"
-else:
-    profile = "lite_fallback"
-
-workflow = f"workflow_{profile}.json"
-wf_path = f"{WORKFLOW_DIR}/{workflow}"
-
-if not os.path.exists(wf_path):
-    url = f"{GITHUB_RAW}/workflows/{workflow}"
-    r = requests.get(url)
-    r.raise_for_status()
-    open(wf_path, "wb").write(r.content)
-
-os.chdir(COMFYUI_DIR)
-
-os.execvp(
-    "python",
-    ["python", "main.py", "--listen", "--port", "8188", "--force-fp16", "--workflow", os.path.join("..", wf_path)]
-)
+if __name__ == "__main__":
+    main()
