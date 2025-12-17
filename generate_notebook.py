@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Kaggle Notebook Generator
-Creates a .ipynb notebook file with all cells from your working code
+Universal ComfyUI Notebook Generator
+Creates a .ipynb notebook file that works on Kaggle, Colab, and Vast.ai
 """
 import json
 import sys
@@ -46,6 +46,39 @@ def create_notebook():
         "cells": []
     }
     
+    # Platform Detection Cell
+    notebook["cells"].append({
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "# Platform Detection"
+        ]
+    })
+    
+    notebook["cells"].append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# Auto-detect platform and set WORK_DIR\n",
+            "import os\n",
+            "\n",
+            "if os.path.exists('/kaggle'):\n",
+            "    WORK_DIR = '/kaggle/working'\n",
+            "    PLATFORM = 'Kaggle'\n",
+            "elif os.path.exists('/content'):  # Google Colab\n",
+            "    WORK_DIR = '/content'\n",
+            "    PLATFORM = 'Colab'\n",
+            "else:  # Vast.ai or other\n",
+            "    WORK_DIR = '/workspace' if os.path.exists('/workspace') else '/content'\n",
+            "    PLATFORM = 'Vast.ai'\n",
+            "\n",
+            "print(f'Detected Platform: {PLATFORM}')\n",
+            "print(f'Work Directory: {WORK_DIR}')"
+        ]
+    })
+    
     # Section 1: Installation
     notebook["cells"].append({
         "cell_type": "markdown",
@@ -62,18 +95,14 @@ def create_notebook():
         "metadata": {},
         "outputs": [],
         "source": [
-            "# Installation (Kaggle paths shown, but installer auto-detects platform)\n",
-            "%cd /kaggle/working\n",
+            "# Installation (uses WORK_DIR from platform detection)\n",
+            "%cd {WORK_DIR}\n",
             "!rm -rf comfy  # Delete old\n",
             f"!git clone https://github.com/{GITHUB_USER}/{REPO_NAME}.git\n",
             f"%cd {REPO_NAME}\n",
             f"!bash install_comfyui_auto.sh --hf-token={HF_TOKEN if HF_TOKEN != 'your_hf_token_here' else 'YOUR_HF_TOKEN_HERE'}\n",
             "\n",
-            "# Platform auto-detection:\n",
-            "#   - Kaggle: Uses /kaggle/working\n",
-            "#   - Colab: Uses /content (auto-detected)\n",
-            "#   - Vast.ai: Uses /workspace or /content\n",
-            "\n",
+            "# Platform-specific paths automatically detected by installer\n",
             "# Wait: First run ~10-30 min, subsequent runs ~1-2 min (cache!)"
         ]
     })
@@ -96,8 +125,8 @@ def create_notebook():
         "source": [
             "# Run with Public Access (via ngrok tunnel)\n",
             "\n",
-            f"!cd /kaggle/working/{REPO_NAME} && git pull\n",
-            f"%cd /kaggle/working/{REPO_NAME}\n",
+            f"!cd {WORK_DIR}/{REPO_NAME} && git pull\n",
+            f"%cd {WORK_DIR}/{REPO_NAME}\n",
             f"!export NGROK_AUTHTOKEN={NGROK_AUTHTOKEN} && python launch_with_tunnel.py"
         ]
     })
@@ -273,26 +302,30 @@ def create_notebook():
     return notebook
 
 def main():
-    """Generate and save notebook"""
-    print("[INFO] Generating Kaggle Notebook...")
-    
+    print("[INFO] Generating Universal ComfyUI Notebook...")
     notebook = create_notebook()
     
-    output_file = "comfyui_kaggle_notebook.ipynb"
-    
+    output_file = "comfyui_universal_notebook.ipynb"
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(notebook, f, indent=2, ensure_ascii=False)
     
     print(f"[OK] Notebook created: {output_file}")
-    print(f"\n[INFO] Next steps:")
-    print(f"   1. Upload {output_file} to Kaggle")
-    print(f"   2. Or copy-paste cells manually")
-    print(f"   3. Enable GPU + Internet in notebook settings")
-    print(f"   4. Run cells in order")
-    print(f"\n[INFO] Tips:")
-    print(f"   - Update NGROK_AUTHTOKEN with your token")
-    print(f"   - Update GITHUB_USER if using GitHub method")
-    print(f"   - Cell 1-4 are the minimal working setup")
+    print()
+    print("[INFO] Next steps:")
+    print("   1. Upload comfyui_universal_notebook.ipynb to Kaggle or Colab")
+    print("   2. Or copy-paste cells manually")
+    print("   3. Enable GPU + Internet in notebook settings")
+    print("   4. Run cells in order - platform will auto-detect!")
+    print()
+    print("[INFO] Platform Support:")
+    print("   - Kaggle: Auto-detects /kaggle/working")
+    print("   - Google Colab: Auto-detects /content")
+    print("   - Vast.ai: Auto-detects /workspace")
+    print()
+    print("[INFO] Tips:")
+    print("   - Update NGROK_AUTHTOKEN with your token")
+    print("   - Update HF_TOKEN for gated models")
+    print("   - First 2 cells are the minimal working setup")
 
 if __name__ == "__main__":
     main()
