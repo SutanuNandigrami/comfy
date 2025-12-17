@@ -343,5 +343,37 @@
       ],
       "note": "Touch of Realism SDXL V2 - cinematic photorealistic style (CivitAI, extracted via API)"
     }
+  },
+  "loras_nsfw": {
+    "detailXL_v1.safetensors": {
+      "url": "https://civitai.com/api/download/models/201052",
+      "auth": "none",
+      "min_size": 140000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "DetailXL - enhances image details and realism (popular for NSFW content)"
+    },
+    "labiaplasty_pussy_2_sdxl.safetensors": {
+      "url": "https://civitai.com/api/download/models/290695",
+      "auth": "none",
+      "min_size": 140000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "Anatomical detail LoRA for adult content generation"
+    },
+    "woman033_sdxl.safetensors": {
+      "url": "https://civitai.com/api/download/models/1084299",
+      "auth": "none",
+      "min_size": 140000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "Woman033 - photorealistic character LoRA trained on NSFW dataset (60%+ explicit)"
+    }
   }
 }

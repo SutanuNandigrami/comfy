@@ -1,0 +1,155 @@
+{
+    "workflow_info": {
+        "name": "NSFW Photorealistic Generation",
+        "description": "Adult content generation with anatomical detail LoRAs and photorealistic character models",
+        "gpu_tiers": [
+            "3090",
+            "4090"
+        ],
+        "required_models": [
+            "juggernautXL_v9.safetensors",
+            "detailXL_v1.safetensors",
+            "labiaplasty_pussy_2_sdxl.safetensors",
+            "woman033_sdxl.safetensors"
+        ],
+        "required_nodes": [],
+        "nsfw": true
+    },
+    "nodes": [
+        {
+            "id": 1,
+            "type": "CheckpointLoaderSimple",
+            "widgets_values": [
+                "juggernautXL_v9.safetensors"
+            ]
+        },
+        {
+            "id": 2,
+            "type": "LoraLoader",
+            "widgets_values": [
+                "detailXL_v1.safetensors",
+                0.8,
+                0.8
+            ]
+        },
+        {
+            "id": 3,
+            "type": "LoraLoader",
+            "widgets_values": [
+                "labiaplasty_pussy_2_sdxl.safetensors",
+                0.6,
+                0.6
+            ]
+        },
+        {
+            "id": 4,
+            "type": "LoraLoader",
+            "widgets_values": [
+                "woman033_sdxl.safetensors",
+                0.7,
+                0.7
+            ]
+        },
+        {
+            "id": 5,
+            "type": "EmptyLatentImage",
+            "widgets_values": [
+                1024,
+                1344,
+                1
+            ]
+        },
+        {
+            "id": 6,
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+                "photorealistic, detailed skin, natural lighting, attractive woman, anatomically correct"
+            ]
+        },
+        {
+            "id": 7,
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+                "deformed, unrealistic proportions, bad anatomy, cartoon, anime"
+            ]
+        },
+        {
+            "id": 8,
+            "type": "KSampler",
+            "widgets_values": [
+                35,
+                "dpmpp_2m_karras",
+                "normal",
+                1,
+                8.5
+            ]
+        },
+        {
+            "id": 9,
+            "type": "VAEDecode"
+        },
+        {
+            "id": 10,
+            "type": "SaveImage",
+            "widgets_values": [
+                "NSFW_Photorealistic"
+            ]
+        }
+    ],
+    "links": [
+        [
+            1,
+            0,
+            2,
+            0
+        ],
+        [
+            2,
+            0,
+            3,
+            0
+        ],
+        [
+            3,
+            0,
+            4,
+            0
+        ],
+        [
+            4,
+            0,
+            8,
+            0
+        ],
+        [
+            5,
+            0,
+            8,
+            3
+        ],
+        [
+            6,
+            0,
+            8,
+            1
+        ],
+        [
+            7,
+            0,
+            8,
+            2
+        ],
+        [
+            8,
+            0,
+            9,
+            0
+        ],
+        [
+            9,
+            0,
+            10,
+            0
+        ]
+    ]
+}
