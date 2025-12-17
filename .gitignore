@@ -39,9 +39,9 @@ logs/
 temp/
 tmp/
 
-# Jupyter Notebooks (generated)
+# Jupyter Notebooks (generated, may contain secrets)
 *.ipynb_checkpoints/
-comfyui_kaggle_notebook.ipynb
+*.ipynb
 
 # Backup files
 *.bak
