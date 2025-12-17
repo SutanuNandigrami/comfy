@@ -99,7 +99,7 @@ def create_notebook():
             "%cd {WORK_DIR}\n",
             "!rm -rf comfy  # Delete old\n",
             f"!git clone https://github.com/{GITHUB_USER}/{REPO_NAME}.git\n",
-            f"%cd {REPO_NAME}\n",
+            "%cd {REPO_NAME}\n",
             f"!bash install_comfyui_auto.sh --hf-token={HF_TOKEN if HF_TOKEN != 'your_hf_token_here' else 'YOUR_HF_TOKEN_HERE'}\n",
             "\n",
             "# Platform-specific paths automatically detected by installer\n",
@@ -125,8 +125,8 @@ def create_notebook():
         "source": [
             "# Run with Public Access (via ngrok tunnel)\n",
             "\n",
-            f"!cd {WORK_DIR}/{REPO_NAME} && git pull\n",
-            f"%cd {WORK_DIR}/{REPO_NAME}\n",
+            f"!cd {{WORK_DIR}}/{REPO_NAME} && git pull\\n",
+            f"%cd {{WORK_DIR}}/{REPO_NAME}\\n",
             f"!export NGROK_AUTHTOKEN={NGROK_AUTHTOKEN} && python launch_with_tunnel.py"
         ]
     })
