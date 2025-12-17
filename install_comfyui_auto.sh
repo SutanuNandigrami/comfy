@@ -112,10 +112,10 @@ fetch_model () {
       echo "[CACHE] Corrupt (size) - deleting $name"
       rm -f "$cache_file"
     elif [[ "$sha" != "IGNORE" ]]; then
-      echo "$sha  $cache_file" | sha256sum -c - || {
+      if ! echo "$sha  $cache_file" | sha256sum -c - >/dev/null 2>&1; then
         echo "[CACHE] Corrupt (hash) - deleting $name"
         rm -f "$cache_file"
-      }
+      fi
     fi
   fi
 
