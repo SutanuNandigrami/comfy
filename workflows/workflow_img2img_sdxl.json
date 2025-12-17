@@ -1,0 +1,118 @@
+{
+    "workflow_info": {
+        "name": "SDXL Img2Img",
+        "description": "Transform existing images with text prompts using SDXL",
+        "gpu_tiers": [
+            "t4",
+            "p100",
+            "3090",
+            "4090"
+        ],
+        "required_models": [
+            "juggernautXL_v9.safetensors",
+            "sdxl_vae.safetensors"
+        ],
+        "required_nodes": []
+    },
+    "nodes": [
+        {
+            "id": 1,
+            "type": "CheckpointLoaderSimple",
+            "widgets_values": [
+                "juggernautXL_v9.safetensors"
+            ]
+        },
+        {
+            "id": 2,
+            "type": "LoadImage",
+            "widgets_values": [
+                "input.png"
+            ]
+        },
+        {
+            "id": 3,
+            "type": "VAEEncode"
+        },
+        {
+            "id": 4,
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+                "enhance quality, photorealistic"
+            ]
+        },
+        {
+            "id": 5,
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+                "blurry, low quality"
+            ]
+        },
+        {
+            "id": 6,
+            "type": "KSampler",
+            "widgets_values": [
+                20,
+                "dpmpp_2m_karras",
+                "normal",
+                1,
+                7.0,
+                0.75
+            ]
+        },
+        {
+            "id": 7,
+            "type": "VAEDecode"
+        },
+        {
+            "id": 8,
+            "type": "SaveImage",
+            "widgets_values": [
+                "Img2Img"
+            ]
+        }
+    ],
+    "links": [
+        [
+            1,
+            0,
+            6,
+            0
+        ],
+        [
+            2,
+            0,
+            3,
+            0
+        ],
+        [
+            3,
+            0,
+            6,
+            3
+        ],
+        [
+            4,
+            0,
+            6,
+            1
+        ],
+        [
+            5,
+            0,
+            6,
+            2
+        ],
+        [
+            6,
+            0,
+            7,
+            0
+        ],
+        [
+            7,
+            0,
+            8,
+            0
+        ]
+    ]
+}

@@ -1,0 +1,65 @@
+{
+    "workflow_info": {
+        "name": "4x Upscale",
+        "description": "Enhance image resolution using 4x upscaler models",
+        "gpu_tiers": [
+            "t4",
+            "p100",
+            "3090",
+            "4090"
+        ],
+        "required_models": [
+            "4x-UltraSharp.pth"
+        ],
+        "required_nodes": [
+            "ComfyUI_UltimateSDUpscale"
+        ]
+    },
+    "nodes": [
+        {
+            "id": 1,
+            "type": "LoadImage",
+            "widgets_values": [
+                "input.png"
+            ]
+        },
+        {
+            "id": 2,
+            "type": "UpscaleModelLoader",
+            "widgets_values": [
+                "4x-UltraSharp.pth"
+            ]
+        },
+        {
+            "id": 3,
+            "type": "ImageUpscaleWithModel"
+        },
+        {
+            "id": 4,
+            "type": "SaveImage",
+            "widgets_values": [
+                "Upscaled"
+            ]
+        }
+    ],
+    "links": [
+        [
+            1,
+            0,
+            3,
+            1
+        ],
+        [
+            2,
+            0,
+            3,
+            0
+        ],
+        [
+            3,
+            0,
+            4,
+            0
+        ]
+    ]
+}

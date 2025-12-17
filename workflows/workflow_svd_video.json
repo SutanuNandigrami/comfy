@@ -1,0 +1,93 @@
+{
+    "workflow_info": {
+        "name": "SVD Video Generation",
+        "description": "Generate video from image using Stable Video Diffusion",
+        "gpu_tiers": [
+            "3090",
+            "4090"
+        ],
+        "required_models": [
+            "svd_img2vid_xt.safetensors"
+        ],
+        "required_nodes": [
+            "ComfyUI-VideoHelperSuite"
+        ]
+    },
+    "nodes": [
+        {
+            "id": 1,
+            "type": "CheckpointLoaderSimple",
+            "widgets_values": [
+                "svd_img2vid_xt.safetensors"
+            ]
+        },
+        {
+            "id": 2,
+            "type": "LoadImage",
+            "widgets_values": [
+                "input.png"
+            ]
+        },
+        {
+            "id": 3,
+            "type": "SVD_img2vid_Conditioning"
+        },
+        {
+            "id": 4,
+            "type": "KSampler",
+            "widgets_values": [
+                20,
+                "euler",
+                "normal",
+                1,
+                3.0
+            ]
+        },
+        {
+            "id": 5,
+            "type": "VAEDecode"
+        },
+        {
+            "id": 6,
+            "type": "VHS_VideoCombine",
+            "widgets_values": [
+                8,
+                0,
+                "SVD_Output",
+                "video/h264-mp4"
+            ]
+        }
+    ],
+    "links": [
+        [
+            1,
+            0,
+            4,
+            0
+        ],
+        [
+            2,
+            0,
+            3,
+            0
+        ],
+        [
+            3,
+            0,
+            4,
+            1
+        ],
+        [
+            4,
+            0,
+            5,
+            0
+        ],
+        [
+            5,
+            0,
+            6,
+            0
+        ]
+    ]
+}

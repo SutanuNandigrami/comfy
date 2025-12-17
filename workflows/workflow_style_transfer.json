@@ -1,0 +1,124 @@
+{
+    "workflow_info": {
+        "name": "Style Transfer (Cinematic)",
+        "description": "Apply cinematic/photorealistic style using LoRAs",
+        "gpu_tiers": [
+            "t4",
+            "p100",
+            "3090",
+            "4090"
+        ],
+        "required_models": [
+            "juggernautXL_v9.safetensors",
+            "touch_of_realism_xl.safetensors"
+        ],
+        "required_nodes": []
+    },
+    "nodes": [
+        {
+            "id": 1,
+            "type": "CheckpointLoaderSimple",
+            "widgets_values": [
+                "juggernautXL_v9.safetensors"
+            ]
+        },
+        {
+            "id": 2,
+            "type": "LoraLoader",
+            "widgets_values": [
+                "touch_of_realism_xl.safetensors",
+                0.7,
+                0.7
+            ]
+        },
+        {
+            "id": 3,
+            "type": "EmptyLatentImage",
+            "widgets_values": [
+                1024,
+                1024,
+                1
+            ]
+        },
+        {
+            "id": 4,
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+                "cinematic photo, photorealistic, film grain"
+            ]
+        },
+        {
+            "id": 5,
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+                "cartoon, anime, illustration"
+            ]
+        },
+        {
+            "id": 6,
+            "type": "KSampler",
+            "widgets_values": [
+                25,
+                "dpmpp_2m_karras",
+                "normal",
+                1,
+                7.5
+            ]
+        },
+        {
+            "id": 7,
+            "type": "VAEDecode"
+        },
+        {
+            "id": 8,
+            "type": "SaveImage",
+            "widgets_values": [
+                "Cinematic"
+            ]
+        }
+    ],
+    "links": [
+        [
+            1,
+            0,
+            2,
+            0
+        ],
+        [
+            2,
+            0,
+            6,
+            0
+        ],
+        [
+            3,
+            0,
+            6,
+            3
+        ],
+        [
+            4,
+            0,
+            6,
+            1
+        ],
+        [
+            5,
+            0,
+            6,
+            2
+        ],
+        [
+            6,
+            0,
+            7,
+            0
+        ],
+        [
+            7,
+            0,
+            8,
+            0
+        ]
+    ]
+}

@@ -1,0 +1,130 @@
+{
+    "workflow_info": {
+        "name": "SDXL Inpainting",
+        "description": "Selective image editing with inpainting model",
+        "gpu_tiers": [
+            "t4",
+            "p100",
+            "3090",
+            "4090"
+        ],
+        "required_models": [
+            "sdxl_inpainting.safetensors",
+            "sdxl_vae.safetensors"
+        ],
+        "required_nodes": []
+    },
+    "nodes": [
+        {
+            "id": 1,
+            "type": "CheckpointLoaderSimple",
+            "widgets_values": [
+                "sdxl_inpainting.safetensors"
+            ]
+        },
+        {
+            "id": 2,
+            "type": "LoadImage",
+            "widgets_values": [
+                "input.png"
+            ]
+        },
+        {
+            "id": 3,
+            "type": "LoadImageMask",
+            "widgets_values": [
+                "mask.png"
+            ]
+        },
+        {
+            "id": 4,
+            "type": "VAEEncodeForInpaint"
+        },
+        {
+            "id": 5,
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+                "replace with photorealistic content"
+            ]
+        },
+        {
+            "id": 6,
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+                "blurry, artifacts"
+            ]
+        },
+        {
+            "id": 7,
+            "type": "KSampler",
+            "widgets_values": [
+                30,
+                "dpmpp_2m_karras",
+                "normal",
+                1,
+                8.0
+            ]
+        },
+        {
+            "id": 8,
+            "type": "VAEDecode"
+        },
+        {
+            "id": 9,
+            "type": "SaveImage",
+            "widgets_values": [
+                "Inpaint"
+            ]
+        }
+    ],
+    "links": [
+        [
+            1,
+            0,
+            7,
+            0
+        ],
+        [
+            2,
+            0,
+            4,
+            0
+        ],
+        [
+            3,
+            0,
+            4,
+            1
+        ],
+        [
+            4,
+            0,
+            7,
+            3
+        ],
+        [
+            5,
+            0,
+            7,
+            1
+        ],
+        [
+            6,
+            0,
+            7,
+            2
+        ],
+        [
+            7,
+            0,
+            8,
+            0
+        ],
+        [
+            8,
+            0,
+            9,
+            0
+        ]
+    ]
+}

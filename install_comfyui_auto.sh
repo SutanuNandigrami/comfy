@@ -423,7 +423,8 @@ NODES=(
   https://github.com/jags111/efficiency-nodes-comfyui
 )
 
-if [[ "$USE_ANIMATEDIFF" == "1" ]]; then
+# Add workflow-specific nodes for full mode
+if [[ "$INSTALL_MODE" == "full" ]]; then
   NODES+=(https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite)
   NODES+=(https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved)
 fi

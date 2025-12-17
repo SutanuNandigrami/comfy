@@ -1,0 +1,127 @@
+{
+    "workflow_info": {
+        "name": "Face Detailer SDXL",
+        "description": "Enhance facial details using Impact Pack FaceDetailer",
+        "gpu_tiers": [
+            "t4",
+            "p100",
+            "3090",
+            "4090"
+        ],
+        "required_models": [
+            "juggernautXL_v9.safetensors",
+            "better_faces_xl.safetensors"
+        ],
+        "required_nodes": [
+            "ComfyUI-Impact-Pack"
+        ]
+    },
+    "nodes": [
+        {
+            "id": 1,
+            "type": "CheckpointLoaderSimple",
+            "widgets_values": [
+                "juggernautXL_v9.safetensors"
+            ]
+        },
+        {
+            "id": 2,
+            "type": "EmptyLatentImage",
+            "widgets_values": [
+                1024,
+                1024,
+                1
+            ]
+        },
+        {
+            "id": 3,
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+                "portrait photo, detailed face, sharp eyes"
+            ]
+        },
+        {
+            "id": 4,
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+                "blurry face, bad eyes, deformed"
+            ]
+        },
+        {
+            "id": 5,
+            "type": "KSampler",
+            "widgets_values": [
+                25,
+                "dpmpp_2m_karras",
+                "normal",
+                1,
+                7.5
+            ]
+        },
+        {
+            "id": 6,
+            "type": "VAEDecode"
+        },
+        {
+            "id": 7,
+            "type": "FaceDetailer",
+            "widgets_values": [
+                "bbox/face_yolov8m.pt",
+                20,
+                0.4,
+                "center-1"
+            ]
+        },
+        {
+            "id": 8,
+            "type": "SaveImage",
+            "widgets_values": [
+                "FaceDetail"
+            ]
+        }
+    ],
+    "links": [
+        [
+            1,
+            0,
+            5,
+            0
+        ],
+        [
+            2,
+            0,
+            5,
+            3
+        ],
+        [
+            3,
+            0,
+            5,
+            1
+        ],
+        [
+            4,
+            0,
+            5,
+            2
+        ],
+        [
+            5,
+            0,
+            6,
+            0
+        ],
+        [
+            6,
+            0,
+            7,
+            0
+        ],
+        [
+            7,
+            0,
+            8,
+            0
+        ]
+    ]
+}

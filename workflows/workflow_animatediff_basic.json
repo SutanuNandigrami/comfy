@@ -1,0 +1,126 @@
+{
+    "workflow_info": {
+        "name": "AnimateDiff Basic",
+        "description": "Create animations from prompts using AnimateDiff v3",
+        "gpu_tiers": [
+            "3090",
+            "4090"
+        ],
+        "required_models": [
+            "sd_v1-5-pruned-emaonly.safetensors",
+            "mm_sd15_v3.safetensors"
+        ],
+        "required_nodes": [
+            "ComfyUI-AnimateDiff-Evolved",
+            "ComfyUI-VideoHelperSuite"
+        ]
+    },
+    "nodes": [
+        {
+            "id": 1,
+            "type": "CheckpointLoaderSimple",
+            "widgets_values": [
+                "sd_v1-5-pruned-emaonly.safetensors"
+            ]
+        },
+        {
+            "id": 2,
+            "type": "AnimateDiffLoader",
+            "widgets_values": [
+                "mm_sd15_v3.safetensors"
+            ]
+        },
+        {
+            "id": 3,
+            "type": "EmptyLatentImage",
+            "widgets_values": [
+                512,
+                512,
+                16
+            ]
+        },
+        {
+            "id": 4,
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+                "person walking, smooth animation"
+            ]
+        },
+        {
+            "id": 5,
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+                "static, blurry"
+            ]
+        },
+        {
+            "id": 6,
+            "type": "KSampler",
+            "widgets_values": [
+                20,
+                "euler_ancestral",
+                "normal",
+                1,
+                7.5
+            ]
+        },
+        {
+            "id": 7,
+            "type": "VAEDecode"
+        },
+        {
+            "id": 8,
+            "type": "VHS_VideoCombine",
+            "widgets_values": [
+                8,
+                0,
+                "AnimateDiff",
+                "video/h264-mp4"
+            ]
+        }
+    ],
+    "links": [
+        [
+            1,
+            0,
+            6,
+            0
+        ],
+        [
+            2,
+            0,
+            6,
+            4
+        ],
+        [
+            3,
+            0,
+            6,
+            3
+        ],
+        [
+            4,
+            0,
+            6,
+            1
+        ],
+        [
+            5,
+            0,
+            6,
+            2
+        ],
+        [
+            6,
+            0,
+            7,
+            0
+        ],
+        [
+            7,
+            0,
+            8,
+            0
+        ]
+    ]
+}

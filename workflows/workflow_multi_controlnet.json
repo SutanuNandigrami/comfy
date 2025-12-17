@@ -1,0 +1,188 @@
+{
+    "workflow_info": {
+        "name": "Multi-ControlNet (Pose + Depth)",
+        "description": "Precise control using OpenPose and Depth ControlNets simultaneously",
+        "gpu_tiers": [
+            "3090",
+            "4090"
+        ],
+        "required_models": [
+            "juggernautXL_v9.safetensors",
+            "openpose_sdxl.safetensors",
+            "depth_sdxl.safetensors"
+        ],
+        "required_nodes": [
+            "comfyui_controlnet_aux"
+        ]
+    },
+    "nodes": [
+        {
+            "id": 1,
+            "type": "CheckpointLoaderSimple",
+            "widgets_values": [
+                "juggernautXL_v9.safetensors"
+            ]
+        },
+        {
+            "id": 2,
+            "type": "LoadImage",
+            "widgets_values": [
+                "pose_ref.png"
+            ]
+        },
+        {
+            "id": 3,
+            "type": "LoadImage",
+            "widgets_values": [
+                "depth_ref.png"
+            ]
+        },
+        {
+            "id": 4,
+            "type": "ControlNetLoader",
+            "widgets_values": [
+                "openpose_sdxl.safetensors"
+            ]
+        },
+        {
+            "id": 5,
+            "type": "ControlNetLoader",
+            "widgets_values": [
+                "depth_sdxl.safetensors"
+            ]
+        },
+        {
+            "id": 6,
+            "type": "ControlNetApply",
+            "widgets_values": [
+                0.8
+            ]
+        },
+        {
+            "id": 7,
+            "type": "ControlNetApply",
+            "widgets_values": [
+                0.6
+            ]
+        },
+        {
+            "id": 8,
+            "type": "EmptyLatentImage",
+            "widgets_values": [
+                1024,
+                1024,
+                1
+            ]
+        },
+        {
+            "id": 9,
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+                "person in specific pose, realistic"
+            ]
+        },
+        {
+            "id": 10,
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+                "deformed, unrealistic"
+            ]
+        },
+        {
+            "id": 11,
+            "type": "KSampler",
+            "widgets_values": [
+                30,
+                "dpmpp_2m_karras",
+                "normal",
+                1,
+                7.5
+            ]
+        },
+        {
+            "id": 12,
+            "type": "VAEDecode"
+        },
+        {
+            "id": 13,
+            "type": "SaveImage",
+            "widgets_values": [
+                "MultiControl"
+            ]
+        }
+    ],
+    "links": [
+        [
+            1,
+            0,
+            11,
+            0
+        ],
+        [
+            2,
+            0,
+            6,
+            0
+        ],
+        [
+            3,
+            0,
+            7,
+            0
+        ],
+        [
+            4,
+            0,
+            6,
+            1
+        ],
+        [
+            5,
+            0,
+            7,
+            1
+        ],
+        [
+            6,
+            0,
+            11,
+            4
+        ],
+        [
+            7,
+            0,
+            11,
+            4
+        ],
+        [
+            8,
+            0,
+            11,
+            3
+        ],
+        [
+            9,
+            0,
+            11,
+            1
+        ],
+        [
+            10,
+            0,
+            11,
+            2
+        ],
+        [
+            11,
+            0,
+            12,
+            0
+        ],
+        [
+            12,
+            0,
+            13,
+            0
+        ]
+    ]
+}

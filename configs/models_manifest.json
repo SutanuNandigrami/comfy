@@ -284,5 +284,64 @@
       ],
       "post_download": "unzip -oq \"$cache_file\" -d \"$cache_dir\""
     }
+  },
+  "animatediff": {
+    "mm_sd15_v3.safetensors": {
+      "url": "https://huggingface.co/guoyww/animatediff/resolve/main/v3_sd15_mm.ckpt",
+      "auth": "none",
+      "min_size": 1500000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "AnimateDiff v3 motion module for SD1.5 - enables animation workflows"
+    }
+  },
+  "checkpoints_sd15": {
+    "sd_v1-5-pruned-emaonly.safetensors": {
+      "url": "https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors",
+      "auth": "hf",
+      "min_size": 3900000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "SD 1.5 checkpoint required for AnimateDiff workflows"
+    }
+  },
+  "video": {
+    "svd_img2vid_xt.safetensors": {
+      "url": "https://huggingface.co/stabilityai/stable-video-diffusion-img2vid-xt/resolve/main/svd_xt.safetensors",
+      "auth": "hf",
+      "min_size": 9500000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "Stable Video Diffusion - text/image to video generation"
+    }
+  },
+  "loras_style": {
+    "better_faces_xl.safetensors": {
+      "url": "https://civitai.com/api/download/models/123456",
+      "auth": "none",
+      "min_size": 140000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "lite",
+        "full"
+      ],
+      "note": "Better Faces LoRA - improves facial aesthetics (PLACEHOLDER URL - needs updating with actual CivitAI link)"
+    },
+    "touch_of_realism_xl.safetensors": {
+      "url": "https://civitai.com/api/download/models/654321",
+      "auth": "none",
+      "min_size": 140000000,
+      "sha256": "IGNORE",
+      "modes": [
+        "full"
+      ],
+      "note": "Touch of Realism LoRA - cinematic/photorealistic style (PLACEHOLDER URL - needs actual link)"
+    }
   }
 }
