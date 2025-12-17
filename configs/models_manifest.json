@@ -322,16 +322,16 @@
     }
   },
   "loras_style": {
-    "face_helper_sdxl_v1.safetensors": {
-      "url": "https://huggingface.co/0x4BID/face-helper/resolve/main/face-helper-xl-v1.safetensors",
-      "auth": "hf",
+    "better_faces_lora_v1.safetensors": {
+      "url": "https://civitai.com/api/download/models/339112?type=Model&format=SafeTensor",
+      "auth": "none",
       "min_size": 140000000,
       "sha256": "IGNORE",
       "modes": [
         "lite",
         "full"
       ],
-      "note": "Face Helper LoRA - improves facial realism (HuggingFace alternative to CivitAI Better Faces)"
+      "note": "Better Faces LoRA v1.0 - improves facial aesthetics (CivitAI, extracted via browser)"
     },
     "cinematic_lighting_xl.safetensors": {
       "url": "https://huggingface.co/artificialguybr/SDXL-LoRA-slider.cinematic-lighting/resolve/main/cinematic%20lighting.safetensors",
@@ -341,7 +341,7 @@
       "modes": [
         "full"
       ],
-      "note": "Cinematic Lighting LoRA slider - enhances cinematic mood (HuggingFace alternative to CivitAI Touch of Realism)"
+      "note": "Cinematic Lighting LoRA slider - enhances cinematic mood (HuggingFace alternative, Touch of Realism unavailable)"
     }
   }
 }
