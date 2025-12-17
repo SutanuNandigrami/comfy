@@ -2,7 +2,7 @@
   "checkpoints": {
     "juggernautXL_v9.safetensors": {
       "url": "https://huggingface.co/lllyasviel/juggernautXL/resolve/main/juggernautXL_v9.safetensors",
-      "auth": "hf_token",
+      "auth": "hf",
       "min_size": 6000000000,
       "sha256": "IGNORE",
       "modes": [
@@ -12,7 +12,7 @@
     },
     "realvisxl_v4.safetensors": {
       "url": "https://huggingface.co/SG161222/RealVisXL_V4.0/resolve/main/RealVisXL_V4.0.safetensors",
-      "auth": "hf_token",
+      "auth": "hf",
       "min_size": 6000000000,
       "sha256": "IGNORE",
       "modes": [
@@ -21,7 +21,7 @@
     },
     "sd_xl_base_1.0.safetensors": {
       "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors",
-      "auth": "hf_token",
+      "auth": "hf",
       "min_size": 6000000000,
       "sha256": "IGNORE",
       "modes": [
@@ -30,7 +30,7 @@
     },
     "sd_xl_refiner_1.0.safetensors": {
       "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0/resolve/main/sd_xl_refiner_1.0.safetensors",
-      "auth": "hf_token",
+      "auth": "hf",
       "min_size": 6000000000,
       "sha256": "IGNORE",
       "modes": [
@@ -57,7 +57,7 @@
     },
     "counterfeitxl_v10.safetensors": {
       "url": "https://huggingface.co/gsdf/Counterfeit-XL/resolve/main/CounterfeitXL_v1.0.safetensors",
-      "auth": "none",
+      "auth": "hf",
       "min_size": 6000000000,
       "sha256": "IGNORE",
       "modes": [
@@ -65,8 +65,8 @@
       ]
     },
     "sdxl_inpainting.safetensors": {
-      "url": "https://huggingface.co/diffusers/stable-diffusion-xl-1.0-inpainting-0.1/resolve/main/sd_xl_base_1.0_inpainting_0.1.safetensors",
-      "auth": "none",
+      "url": "https://huggingface.co/diffusers/stable-diffusion-xl-1.0-inpainting-0.1/resolve/main/unet/diffusion_pytorch_model.safetensors",
+      "auth": "hf",
       "min_size": 6000000000,
       "sha256": "IGNORE",
       "modes": [
@@ -90,7 +90,7 @@
   "controlnet": {
     "openpose_sdxl.safetensors": {
       "url": "https://huggingface.co/thibaud/controlnet-sdxl-openpose/resolve/main/controlnet-openpose-sdxl.safetensors",
-      "auth": "none",
+      "auth": "hf",
       "min_size": 2400000000,
       "sha256": "IGNORE",
       "modes": [
@@ -100,7 +100,7 @@
     },
     "depth_sdxl.safetensors": {
       "url": "https://huggingface.co/thibaud/controlnet-sdxl-depth/resolve/main/controlnet-depth-sdxl.safetensors",
-      "auth": "none",
+      "auth": "hf",
       "min_size": 2400000000,
       "sha256": "IGNORE",
       "modes": [
@@ -110,7 +110,7 @@
     },
     "canny_sdxl.safetensors": {
       "url": "https://huggingface.co/thibaud/controlnet-sdxl-canny/resolve/main/controlnet-canny-sdxl.safetensors",
-      "auth": "none",
+      "auth": "hf",
       "min_size": 2400000000,
       "sha256": "IGNORE",
       "modes": [
@@ -119,7 +119,7 @@
     },
     "lineart_sdxl.safetensors": {
       "url": "https://huggingface.co/thibaud/controlnet-sdxl-lineart/resolve/main/controlnet-lineart-sdxl.safetensors",
-      "auth": "none",
+      "auth": "hf",
       "min_size": 2400000000,
       "sha256": "IGNORE",
       "modes": [
@@ -140,7 +140,7 @@
   "ipadapter": {
     "ip-adapter-faceid-plusv2_sdxl.bin": {
       "url": "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl.bin",
-      "auth": "hf_token",
+      "auth": "hf",
       "min_size": 800000000,
       "sha256": "IGNORE",
       "modes": [
@@ -150,7 +150,7 @@
     },
     "ip-adapter-faceid_sdxl_lora.safetensors": {
       "url": "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors",
-      "auth": "hf_token",
+      "auth": "hf",
       "min_size": 250000000,
       "sha256": "IGNORE",
       "modes": [
@@ -180,7 +180,7 @@
   "loras": {
     "add_detail_xl.safetensors": {
       "url": "https://huggingface.co/latent-consistency/add-detail-xl/resolve/main/add_detail_xl.safetensors",
-      "auth": "none",
+      "auth": "hf",
       "min_size": 100000000,
       "sha256": "IGNORE",
       "modes": [
@@ -188,19 +188,9 @@
         "full"
       ]
     },
-    "better_faces_xl_v1.safetensors": {
-      "url": "https://civitai.com/api/download/models/132199",
-      "auth": "none",
-      "min_size": 140000000,
-      "sha256": "IGNORE",
-      "modes": [
-        "full"
-      ],
-      "note": "Better Faces LoRA for SDXL - improves facial aesthetics"
-    },
     "face_helper_sdxl_v1.safetensors": {
       "url": "https://huggingface.co/0x4BID/face-helper/resolve/main/face-helper-xl-v1.safetensors",
-      "auth": "none",
+      "auth": "hf",
       "min_size": 120000000,
       "sha256": "IGNORE",
       "modes": [
@@ -208,19 +198,9 @@
       ],
       "note": "Face Helper - realistic faces in close-ups"
     },
-    "skin_detail_xl_v1.safetensors": {
-      "url": "https://civitai.com/api/download/models/217782",
-      "auth": "none",
-      "min_size": 140000000,
-      "sha256": "IGNORE",
-      "modes": [
-        "full"
-      ],
-      "note": "Skin detail with natural blemishes and texture"
-    },
     "cinematic_lighting_xl.safetensors": {
       "url": "https://huggingface.co/artificialguybr/SDXL-LoRA-slider.cinematic-lighting/resolve/main/SDXL-LoRA-slider.cinematic-lighting.safetensors",
-      "auth": "none",
+      "auth": "hf",
       "min_size": 50000000,
       "sha256": "IGNORE",
       "modes": [
@@ -242,7 +222,7 @@
   },
   "upscale_models": {
     "4x-UltraSharp.pth": {
-      "url": "https://huggingface.co/uwg/upscaler/resolve/main/4x-UltraSharp.pth",
+      "url": "https://huggingface.co/Kim2091/UltraSharp/resolve/main/4x-UltraSharp.pth",
       "auth": "none",
       "min_size": 60000000,
       "sha256": "IGNORE",
@@ -282,21 +262,21 @@
       "note": "Optimized for anime content"
     },
     "SwinIR_4x.pth": {
-      "url": "https://huggingface.co/LykosAI/Upscalers/resolve/main/4x/SwinIR/SwinIR_4x.pth",
+      "url": "https://huggingface.co/licyk/sd-upscaler-models/resolve/main/SwinIR/001_classicalSR_DIV2K_s48w8_SwinIR-M_x4.pth",
       "auth": "none",
-      "min_size": 140000000,
+      "min_size": 55000000,
       "sha256": "IGNORE",
       "modes": [
         "full"
       ],
-      "note": "Swin Transformer based upscaler"
+      "note": "Swin Transformer based 4x upscaler (alternative repo)"
     }
   },
   "insightface": {
     "buffalo_l.zip": {
       "url": "https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip",
       "auth": "none",
-      "min_size": 400000000,
+      "min_size": 280000000,
       "sha256": "IGNORE",
       "modes": [
         "lite",

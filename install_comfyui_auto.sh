@@ -35,19 +35,32 @@ if [[ -z "$HF_TOKEN" ]]; then
 fi
 
 # ==========================================================
-# === PATHS (UNCHANGED LOCATIONS) ==========================
+# === PLATFORM DETECTION & PATHS ===========================
 # ==========================================================
-COMFYUI_DIR="/kaggle/working/ComfyUI"
+# Auto-detect Kaggle vs Colab and set appropriate paths
+if [[ -d "/kaggle" ]]; then
+  # Running on Kaggle
+  PLATFORM="kaggle"
+  WORK_DIR="/kaggle/working"
+else
+  # Running on Colab or other platform
+  PLATFORM="colab"
+  WORK_DIR="/content"
+fi
 
-# === FIX: OFFLINE MODEL CACHE (NEW, ADDITIVE) ===
-CACHE_ROOT="/kaggle/working/model-cache"
+echo "=== Platform Detection ==="
+echo "Platform: $PLATFORM"
+echo "Work dir: $WORK_DIR"
+
+COMFYUI_DIR="$WORK_DIR/ComfyUI"
+CACHE_ROOT="$WORK_DIR/model-cache"
 MANIFEST="$(dirname "$0")/configs/models_manifest.json"
 
-# === PIP WHEELS CACHE (NEW, ULTRA-FAST RE-RUNS) ===
-PIP_CACHE_DIR="/kaggle/working/pip-cache"
+# === PIP WHEELS CACHE (ULTRA-FAST RE-RUNS) ===
+PIP_CACHE_DIR="$WORK_DIR/pip-cache"
 export PIP_CACHE_DIR
 export PIP_NO_WARN_SCRIPT_LOCATION=1
-export PIP_NO_WARN_CONFLICTS=1  # Suppress dependency warnings on Kaggle
+export PIP_NO_WARN_CONFLICTS=1  # Suppress dependency warnings
 
 mkdir -p "$CACHE_ROOT" "$PIP_CACHE_DIR"
 
@@ -231,8 +244,8 @@ clean_corrupted_cache() {
 # ==========================================================
 
 # Create symlink so manifest is found at expected location
-if [[ ! -f /kaggle/working/models_manifest.json ]]; then
-  ln -sf "$(dirname "$0")/configs/models_manifest.json" /kaggle/working/models_manifest.json
+if [[ ! -f "$WORK_DIR/models_manifest.json" ]]; then
+  ln -sf "$(dirname "$0")/configs/models_manifest.json" "$WORK_DIR/models_manifest.json"
 fi
 
 if [[ ! -f "$MANIFEST" ]]; then
@@ -250,6 +263,7 @@ echo "=== Applying model manifest ==="
 
 # Export variables for Python script (INSTALL_MODE now set)
 export HF_TOKEN
+export WORK_DIR
 
 
 python - << 'EOF'
@@ -269,7 +283,8 @@ if not os.path.exists(manifest_path):
 manifest = json.load(open(manifest_path))
 install_mode = os.getenv("INSTALL_MODE", "lite")
 hf_token = os.getenv("HF_TOKEN", "")
-cache_root = "/kaggle/working/model-cache"
+work_dir = os.getenv("WORK_DIR", "/content")
+cache_root = f"{work_dir}/model-cache"
 
 # Category to directory mapping
 category_dirs = {
@@ -444,7 +459,7 @@ echo ""
 echo "=== System Health Checks ==="
 
 # Check manifest symlink
-if [[ -L /kaggle/working/models_manifest.json ]]; then
+if [[ -L "$WORK_DIR/models_manifest.json" ]]; then
   echo "✅ Manifest symlink: OK"
 else
   echo "⚠️ Manifest symlink: MISSING (non-critical)"

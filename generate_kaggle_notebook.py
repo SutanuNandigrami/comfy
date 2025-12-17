@@ -205,6 +205,68 @@ def create_notebook():
         ]
     })
     
+    # Section 5: Validation & Updates
+    notebook["cells"].append({
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "# Validation & Updates"
+        ]
+    })
+    
+    # Cell 9: Validate Model URLs
+    notebook["cells"].append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# Validate all model URLs (optional)\n",
+            "\n",
+            f"# %cd /kaggle/working/{REPO_NAME}\n",
+            "# !python validate_urls.py\n",
+            "# \n",
+            "# Expected: 100% success (28/28 models)\n",
+            "# This validates all model download URLs are working"
+        ]
+    })
+    
+    # Cell 10: Safe Update System
+    notebook["cells"].append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# Safe Component Updates (prevents dependency hell)\n",
+            "\n",
+            f"# %cd /kaggle/working/{REPO_NAME}\n",
+            "# \n",
+            "# # Interactive menu (recommended):\n",
+            "# !bash safe_update.sh\n",
+            "# \n",
+            "# # Or non-interactive full update:\n",
+            "# !bash safe_update.sh << EOF\n",
+            "# 4\n",
+            "# 9\n",
+            "# EOF\n",
+            "# \n",
+            "# Update options:\n",
+            "#   1 = Update core dependencies (PyTorch, xformers, NumPy)\n",
+            "#   2 = Update ComfyUI\n",
+            "#   3 = Update custom nodes\n",
+            "#   4 = Full update (all components)\n",
+            "#   5 = Check compatibility\n",
+            "#   6 = Save current versions (lockfile)\n",
+            "# \n",
+            "# Features:\n",
+            "#   - Automatic backups before updates\n",
+            "#   - Compatibility checking\n",
+            "#   - Version locking\n",
+            "#   - Rollback capability if something breaks"
+        ]
+    })
+    
     return notebook
 
 def main():
