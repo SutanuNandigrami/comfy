@@ -333,14 +333,23 @@ if [[ "$USE_ANIMATEDIFF" == "1" ]]; then
   NODES+=(https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved)
 fi
 
+# Disable git prompts for non-interactive environments (Kaggle/Colab)
+export GIT_TERMINAL_PROMPT=0
+
 for repo in "${NODES[@]}"; do
   name="${repo##*/}"
   if [[ -d "$name" ]]; then
     echo "Updating $name..."
-    (cd "$name" && git pull --quiet)
+    (cd "$name" && git pull --quiet) || echo "[WARN] Failed to update $name"
   else
     echo "Installing $name..."
-    git clone --quiet --recursive "$repo"
+    if git clone --quiet --recursive "$repo" 2>/dev/null; then
+      echo "✓ Installed $name"
+    else
+      echo "[WARN] Failed to install $name (may require authentication or be unavailable)"
+      echo "[INFO] Skipping $name - installation will continue"
+      continue
+    fi
   fi
   [[ -f "$name/requirements.txt" ]] && pip install -q -r "$name/requirements.txt"
 done
