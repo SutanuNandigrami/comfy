@@ -190,7 +190,7 @@ def create_notebook():
         "outputs": [],
         "source": [
             "# Installation (uses WORK_DIR from platform detection)\n",
-            "%cd {WORK_DIR}\n",
+            "%cd $WORK_DIR\n",
             "!rm -rf comfy  # Delete old\n",
             f"!git clone https://github.com/{GITHUB_USER}/{REPO_NAME}.git\n",
             "%cd comfy\n",
@@ -219,8 +219,8 @@ def create_notebook():
         "source": [
             "# Run with Public Access (via ngrok tunnel)\n",
             "\n",
-            "!cd {WORK_DIR}/comfy && git pull\n",
-            "%cd {WORK_DIR}/comfy\n",
+            "!cd $WORK_DIR/comfy && git pull\n",
+            "%cd $WORK_DIR/comfy\n",
             f"!export NGROK_AUTHTOKEN={NGROK_AUTHTOKEN} && python launch_with_tunnel.py"
         ]
     })
