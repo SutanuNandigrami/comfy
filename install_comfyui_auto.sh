@@ -58,7 +58,7 @@ echo "Pip cache   : $PIP_CACHE_DIR"
 # ==========================================================
 # === FIX: DEPENDENCY STABILITY =============================
 # ==========================================================
-echo "=== Stabilizing Python environment ===\"
+echo "=== Stabilizing Python environment ==="
 
 pip uninstall -y torch torchvision torchaudio xformers numpy protobuf 2>/dev/null || true
 
@@ -82,6 +82,45 @@ print("[CHECK] CUDA available:", torch.cuda.is_available())
 print("[CHECK] NumPy:", numpy.__version__)
 assert torch.cuda.is_available(), "CUDA NOT AVAILABLE"
 EOF
+
+# ------------------ GPU DETECTION (MOVED EARLY) ------------------
+echo "=== Detecting GPU ==="
+GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader | head -n 1 2>/dev/null || echo "Unknown")
+GPU_MEM=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits | head -n 1 2>/dev/null || echo "0")
+
+INSTALL_MODE="lite"
+CONFIG_FILE="comfy_t4.yaml"
+USE_ANIMATEDIFF=0
+
+# Select config based on GPU (with fallback for no GPU)
+if [[ "$GPU_NAME" == *"4090"* ]] || [[ "$GPU_MEM" -ge 24000 ]]; then
+  INSTALL_MODE="full"
+  CONFIG_FILE="comfy_4090.yaml"
+  USE_ANIMATEDIFF=1
+elif [[ "$GPU_NAME" == *"3090"* ]] || [[ "$GPU_MEM" -ge 22000 ]]; then
+  INSTALL_MODE="full"
+  CONFIG_FILE="comfy_3090.yaml"
+  USE_ANIMATEDIFF=1
+elif [[ "$GPU_NAME" == *"P100"* ]]; then
+  INSTALL_MODE="lite"
+  CONFIG_FILE="comfy_p100.yaml"
+  USE_ANIMATEDIFF=0
+else
+  # Default to T4 config for unknown GPUs (or no GPU)
+  INSTALL_MODE="lite"
+  CONFIG_FILE="comfy_t4.yaml"
+  USE_ANIMATEDIFF=0
+fi
+
+CONFIG_PATH="$(dirname "$0")/configs/$CONFIG_FILE"
+
+export INSTALL_MODE
+export MANIFEST  # Pre-export for later use
+
+echo "GPU     : $GPU_NAME"
+echo "VRAM    : ${GPU_MEM} MB"
+echo "MODE    : $INSTALL_MODE"
+echo "CONFIG  : $CONFIG_FILE"
 
 # ==========================================================
 # === FIX: OFFLINE MODEL CACHE + VALIDATION =================
@@ -134,50 +173,49 @@ fetch_model () {
 }
 
 # ==========================================================
-# === AUTO-CLEAN CORRUPTED CACHE (NEW) =====================
+# === AUTO-CLEAN CORRUPTED CACHE (POSIX-COMPATIBLE) ========
 # ==========================================================
 clean_corrupted_cache() {
   echo ""
   echo "=== Auto-Cleaning Cache ==="
   
-  local cleaned=0
-  local total=0
+  if [[ ! -d "$CACHE_ROOT" ]]; then
+    echo "✅ No cache directory found (nothing to clean)"
+    return
+  fi
   
-  # Find all cached model files
-  while IFS= read -r -d '' cache_file; do
-    ((total++))
-    
-    local filename=$(basename "$cache_file")
-    local filesize=$(stat -c%s "$cache_file" 2>/dev/null || echo 0)
-    
-    # Check if file is suspiciously small (likely corrupted)
-    if [[ "$filesize" -lt 1000000 ]]; then  # Less than 1MB = likely corrupted
-      echo "⚠️ Removing corrupt file: $filename (${filesize} bytes)"
-      rm -f "$cache_file"
-      ((cleaned++))
-      continue
-    fi
-    
-    # Check for zero-byte files
-    if [[ "$filesize" -eq 0 ]]; then
-      echo "⚠️ Removing zero-byte file: $filename"
-      rm -f "$cache_file"
-      ((cleaned++))
-      continue
-    fi
-    
-    # Check file integrity (basic header check for safetensors)
-    if [[ "$filename" == *.safetensors ]]; then
-      # Safetensors should have specific header, check first 8 bytes
-      local header=$(head -c 8 "$cache_file" 2>/dev/null | xxd -p 2>/dev/null || echo "")
-      if [[ -z "$header" ]]; then
-        echo "⚠️ Removing unreadable file: $filename"
-        rm -f "$cache_file"
-        ((cleaned++))
-      fi
-    fi
-    
-  done < <(find "$CACHE_ROOT" -type f \( -name "*.safetensors" -o -name "*.pth" -o -name "*.bin" -o -name "*.zip" \) -print0 2>/dev/null)
+  local total
+  total=$(find "$CACHE_ROOT" -type f \( -name "*.safetensors" -o -name "*.pth" -o -name "*.bin" -o -name "*.zip" \) 2>/dev/null | wc -l)
+  
+  local cleaned=0
+  
+  # Remove zero-byte files
+  local zero_count
+  zero_count=$(find "$CACHE_ROOT" -type f \( -name "*.safetensors" -o -name "*.pth" -o -name "*.bin" -o -name "*.zip" \) -size 0c 2>/dev/null | wc -l)
+  if [[ "$zero_count" -gt 0 ]]; then
+    find "$CACHE_ROOT" -type f \( -name "*.safetensors" -o -name "*.pth" -o -name "*.bin" -o -name "*.zip" \) -size 0c -delete 2>/dev/null
+    cleaned=$((cleaned + zero_count))
+    echo "⚠️ Removed $zero_count zero-byte file(s)"
+  fi
+  
+  # Remove suspiciously small files (<1MB, likely corrupted)
+  local small_count
+  small_count=$(find "$CACHE_ROOT" -type f \( -name "*.safetensors" -o -name "*.pth" -o -name "*.bin" -o -name "*.zip" \) -size -1M 2>/dev/null | wc -l)
+  if [[ "$small_count" -gt 0 ]]; then
+    find "$CACHE_ROOT" -type f \( -name "*.safetensors" -o -name "*.pth" -o -name "*.bin" -o -name "*.zip" \) -size -1M -delete 2>/dev/null
+    cleaned=$((cleaned + small_count))
+    echo "⚠️ Removed $small_count small file(s) (<1MB)"
+  fi
+  
+  # Optional: Basic safetensors header check (POSIX via -exec; skips if file unreadable)
+  # This adds overhead; uncomment if needed for strict validation
+  # local header_bad_count
+  # header_bad_count=$(find "$CACHE_ROOT" -type f -name "*.safetensors" -size +1M -exec sh -c 'head -c 8 "$1" >/dev/null 2>&1 || echo "bad"' _ {} \; 2>/dev/null | grep -c "bad")
+  # if [[ "$header_bad_count" -gt 0 ]]; then
+  #   find "$CACHE_ROOT" -type f -name "*.safetensors" -size +1M -exec sh -c 'head -c 8 "$1" >/dev/null 2>&1 || rm -f "$1"' _ {} \; 2>/dev/null
+  #   cleaned=$((cleaned + header_bad_count))
+  #   echo "⚠️ Removed $header_bad_count invalid safetensors (bad header)"
+  # fi
   
   if [[ $cleaned -gt 0 ]]; then
     echo "✅ Cleaned $cleaned corrupted file(s) out of $total total"
@@ -185,7 +223,6 @@ clean_corrupted_cache() {
     echo "✅ All $total cached files are healthy"
   fi
 }
-
 
 # ==========================================================
 # === FIX: MODEL VERSION MANIFEST ===========================
@@ -209,9 +246,7 @@ fi
 
 echo "=== Applying model manifest ==="
 
-# Export variables for Python script
-export MANIFEST
-export INSTALL_MODE
+# Export variables for Python script (INSTALL_MODE now set)
 export HF_TOKEN
 
 python - << 'EOF'
@@ -252,48 +287,7 @@ for category, models in manifest.items():
         os.system(f"bash -c '{cmd}'")
 EOF
 
-# ==========================================================
-
-# ------------------ GPU DETECTION ------------------
-echo "=== Detecting GPU ==="
-GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader | head -n 1)
-GPU_MEM=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits | head -n 1)
-
-INSTALL_MODE="lite"
-CONFIG_FILE="comfy_t4.yaml"
-USE_ANIMATEDIFF=0
-
-# Select config based on GPU
-if [[ "$GPU_NAME" == *"4090"* ]] || [[ "$GPU_MEM" -ge 24000 ]]; then
-  INSTALL_MODE="full"
-  CONFIG_FILE="comfy_4090.yaml"
-  USE_ANIMATEDIFF=1
-elif [[ "$GPU_NAME" == *"3090"* ]] || [[ "$GPU_MEM" -ge 22000 ]]; then
-  INSTALL_MODE="full"
-  CONFIG_FILE="comfy_3090.yaml"
-  USE_ANIMATEDIFF=1
-elif [[ "$GPU_NAME" == *"P100"* ]]; then
-  INSTALL_MODE="lite"
-  CONFIG_FILE="comfy_p100.yaml"
-  USE_ANIMATEDIFF=0
-else
-  # Default to T4 config for unknown GPUs
-  INSTALL_MODE="lite"
-  CONFIG_FILE="comfy_t4.yaml"
-  USE_ANIMATEDIFF=0
-fi
-
-CONFIG_PATH="$(dirname "$0")/configs/$CONFIG_FILE"
-
-export INSTALL_MODE
-export MANIFEST
-
-echo "GPU     : $GPU_NAME"
-echo "VRAM    : ${GPU_MEM} MB"
-echo "MODE    : $INSTALL_MODE"
-echo "CONFIG  : $CONFIG_FILE"
-
-# Create symlink to active config
+# Create symlink to active config (now after mode set, but before ComfyUI install)
 ln -sf "$CONFIG_PATH" "$COMFYUI_DIR/active_config.yaml" 2>/dev/null || true
 
 # ------------------ COMFYUI INSTALL ------------------
@@ -308,7 +302,6 @@ fi
 
 # === Install ComfyUI requirements ===
 pip install -q -r requirements.txt || echo "[WARN] No requirements.txt found"
-
 
 # ------------------ CUSTOM NODES ------------------
 echo "=== Installing Custom Nodes ==="
