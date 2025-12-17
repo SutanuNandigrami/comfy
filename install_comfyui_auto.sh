@@ -47,6 +47,7 @@ MANIFEST="$(dirname "$0")/configs/models_manifest.json"
 PIP_CACHE_DIR="/kaggle/working/pip-cache"
 export PIP_CACHE_DIR
 export PIP_NO_WARN_SCRIPT_LOCATION=1
+export PIP_NO_WARN_CONFLICTS=1  # Suppress dependency warnings on Kaggle
 
 mkdir -p "$CACHE_ROOT" "$PIP_CACHE_DIR"
 
@@ -57,19 +58,19 @@ echo "Pip cache   : $PIP_CACHE_DIR"
 # ==========================================================
 # === FIX: DEPENDENCY STABILITY =============================
 # ==========================================================
-echo "=== Stabilizing Python environment ==="
+echo "=== Stabilizing Python environment ===\"
 
-pip uninstall -y torch torchvision torchaudio xformers numpy protobuf || true
+pip uninstall -y torch torchvision torchaudio xformers numpy protobuf 2>/dev/null || true
 
-pip install \
+pip install -q \
   torch==2.6.0 \
   torchvision==0.21.0 \
   torchaudio==2.6.0 \
   --index-url https://download.pytorch.org/whl/cu118 \
-  --use-deprecated=legacy-resolver
+  --use-deprecated=legacy-resolver 2>&1 | grep -v "^\(ERROR: pip's\|ERROR: pip's dependency\)" || true
 
-pip install xformers==0.0.33.post2 --no-deps
-pip install numpy==1.26.4 protobuf==4.25.3 --force-reinstall
+pip install -q xformers==0.0.33.post2 --no-deps
+pip install -q numpy==1.26.4 protobuf==4.25.3 --force-reinstall 2>&1 | grep -v "^\(ERROR: pip's\|ERROR: pip's dependency\)" || true
 
 # ==========================================================
 # === SANITY CHECK (ADDITIVE) ===============================
