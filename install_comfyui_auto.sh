@@ -85,7 +85,7 @@ echo "=== Stabilizing Python environment ==="
 pip uninstall -y torch torchvision torchaudio xformers numpy protobuf 2>/dev/null || true
 
 pip install -q \
-  torch==2.9.1 \
+  torch==2.6.0 \
   torchvision==0.21.0 \
   torchaudio==2.6.0 \
   --index-url https://download.pytorch.org/whl/cu118 \
