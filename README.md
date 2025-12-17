@@ -46,8 +46,9 @@ bash install_comfyui_auto.sh --hf-token=hf_xxxxxxxxxxxxx
 ```
 
 **What it does:**
+- **Auto-detects platform** (Kaggle/Colab/Vast.ai)
 - Detects your GPU automatically
-- Installs ComfyUI to `/kaggle/working/ComfyUI` (or equivalent)
+- Installs ComfyUI to `$WORK_DIR/ComfyUI` (`/kaggle/working` on Kaggle, `/content` on Colab)
 - Downloads models based on GPU tier (lite/full mode)
 - Sets up offline cache for fast re-runs
 - Installs custom nodes and dependencies
@@ -78,10 +79,12 @@ python launch_auto.py
 http://localhost:8188
 ```
 
-#### Vast/RunPod
+#### Remote (Vast.ai/VPS)
 ```
 http://<public-ip>:8188
 ```
+
+> **Note**: Paths shown as `/kaggle/working` in Kaggle examples. On Colab, substitute with `/content`. Scripts auto-detect platform.
 
 ---
 
@@ -143,9 +146,9 @@ comfy/
     └── workflow_lite_fallback.json
 ```
 
-**Installed paths:**
+**Installed paths** (Kaggle example, auto-adapts per platform):  
 ```
-/kaggle/working/
+$WORK_DIR/
 ├── ComfyUI/                   # Main installation
 ├── model-cache/               # Offline cache (persistent)
 │   ├── checkpoints/
@@ -156,6 +159,10 @@ comfy/
 │   └── upscale_models/
 └── models_manifest.json       # Symlink to configs/
 ```
+
+- **Kaggle**: `$WORK_DIR` = `/kaggle/working`
+- **Colab**: `$WORK_DIR` = `/content`  
+- **Vast.ai**: `$WORK_DIR` = `/workspace` or `/content`
 
 ---
 
@@ -172,7 +179,7 @@ bash install_comfyui_auto.sh --hf-token=hf_xxx --refresh-models
 ### Manual Launch (Without Auto-Detection)
 
 ```bash
-cd /kaggle/working/ComfyUI
+cd $WORK_DIR/ComfyUI  # Auto-detected platform path
 python main.py --listen --port 8188 --force-fp16
 ```
 
@@ -255,7 +262,7 @@ bash install_comfyui_auto.sh --hf-token=hf_xxx
 
 **Solution:** Ensure you're running from the `comfy/` directory:
 ```bash
-cd /kaggle/working/comfy  # or wherever you cloned
+cd $WORK_DIR/comfy  # Platform-specific path
 python launch_auto.py
 ```
 
@@ -347,7 +354,7 @@ The launcher loads the correct config automatically based on detected GPU tier.
 ## ❌ What NOT to Do
 
 - ❌ Don't run `main.py` before running `launch_auto.py` (launcher sets up paths)
-- ❌ Don't delete `/kaggle/working/model-cache/` (cache is your friend)
+- ❌ Don't delete `$WORK_DIR/model-cache/` (cache is your friend)
 - ❌ Don't edit workflow JSONs directly (they're GPU-specific)
 - ❌ Don't rerun installer every time (it's designed for one-time setup)
 
