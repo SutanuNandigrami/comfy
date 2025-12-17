@@ -6,6 +6,18 @@ Tested on: Kaggle (T4/P100), Colab, Vast.ai, Local RTX GPUs
 
 ---
 
+## 🎉 New in v2.1 (Dec 2025)
+
+- 🌐 **Ngrok Tunnel Support** - One-click public URL via `launch_with_tunnel.py`
+- ⚙️ **Centralized Config** - All credentials in `.env` file
+- 📓 **Kaggle Notebook Generator** - Auto-generates working notebooks
+- 📚 **Enhanced Docs** - Quick start guides + config setup
+- 🧹 **Cleaner Codebase** - Removed verification scripts
+
+**See:** `QUICK_START_KAGGLE.md` | `CONFIG_SETUP.md` | `UPDATE_SUMMARY.md`
+
+---
+
 ## ✨ Features
 
 - 🎯 **Zero-Config GPU Detection** - Auto-detects GPU tier (T4, P100, 3090, 4090)
@@ -14,6 +26,7 @@ Tested on: Kaggle (T4/P100), Colab, Vast.ai, Local RTX GPUs
 - ⚡ **Mode-Based Installation** - Lite (9 models, ~13GB) or Full (27 models, ~79GB)
 - 🔄 **Self-Healing** - Validates model sizes and checksums
 - 🚀 **One-Command Launch** - Auto-selects workflow and config
+- 🌐 **Public Access** - Ngrok tunnel for remote access
 
 ---
 
