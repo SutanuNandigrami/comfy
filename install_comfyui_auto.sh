@@ -324,7 +324,7 @@ NODES=(
   https://github.com/pythongosssss/ComfyUI-Custom-Scripts
   https://github.com/WASasquatch/was-node-suite-comfyui
   https://github.com/rgthree/rgthree-comfy
-  https://github.com/Gourieff/comfyui-reactor-node
+  https://github.com/Gourieff/ComfyUI-ReActor-Node
   https://github.com/ssitu/ComfyUI_UltimateSDUpscale
   https://github.com/jags111/efficiency-nodes-comfyui
 )
