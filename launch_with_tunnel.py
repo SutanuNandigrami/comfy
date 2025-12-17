@@ -12,7 +12,7 @@ import signal
 from pathlib import Path
 
 def install_cloudflared():
-    """Install cloudflared tunnel"""
+    """Install cloudflared tunnel (fast method)"""
     print("📦 Installing Cloudflare Tunnel...")
     try:
         # Check if already installed
@@ -24,24 +24,31 @@ def install_cloudflared():
     except FileNotFoundError:
         pass
     
-    # Install cloudflared
+    # Fast installation - download binary directly
+    install_dir = "/usr/local/bin"
+    binary_path = f"{install_dir}/cloudflared"
+    
+    print("⏳ Downloading cloudflared binary...")
     commands = [
-        "wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb",
-        "dpkg -i cloudflared-linux-amd64.deb 2>/dev/null || true",
-        "rm -f cloudflared-linux-amd64.deb"
+        f"wget -q -O {binary_path} https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
+        f"chmod +x {binary_path}"
     ]
     
-    for cmd in commands:
-        subprocess.run(cmd, shell=True, check=False)
-    
-    # Verify installation
     try:
+        for cmd in commands:
+            result = subprocess.run(cmd, shell=True, check=True, 
+                                  capture_output=True, timeout=30)
+        
+        # Verify installation
         subprocess.run(['cloudflared', '--version'], 
                       capture_output=True, check=True)
         print("✅ Cloudflare Tunnel installed successfully")
         return True
-    except:
-        print("❌ Failed to install Cloudflare Tunnel")
+    except subprocess.TimeoutExpired:
+        print("❌ Installation timed out")
+        return False
+    except Exception as e:
+        print(f"❌ Installation failed: {e}")
         return False
 
 def start_comfyui():
