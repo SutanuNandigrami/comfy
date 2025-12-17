@@ -1,0 +1,48 @@
+# Environment and credentials
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+
+# ComfyUI directories (if testing locally)
+ComfyUI/
+model-cache/
+pip-cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+temp/
+tmp/
+
+# Jupyter Notebooks (generated)
+*.ipynb_checkpoints/
+comfyui_kaggle_notebook.ipynb
+
+# Backup files
+*.bak
+*.backup
