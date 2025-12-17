@@ -25,6 +25,9 @@ NGROK_AUTHTOKEN = os.getenv('NGROK_AUTHTOKEN', '')
 # === HuggingFace Configuration ===
 HF_TOKEN = os.getenv('HF_TOKEN', '')
 
+# === CivitAI Configuration ===
+CIVITAI_API_TOKEN = os.getenv('CIVITAI_API_TOKEN', '')
+
 # === GitHub Configuration ===
 GITHUB_USER = os.getenv('GITHUB_USER', 'SutanuNandigrami')
 GITHUB_REPO = os.getenv('GITHUB_REPO', 'comfy')
@@ -63,6 +66,7 @@ def print_config():
     print("="*60)
     print(f"Ngrok Token: {'*' * 20}{NGROK_AUTHTOKEN[-8:] if NGROK_AUTHTOKEN else 'NOT SET'}")
     print(f"HF Token: {'*' * 20}{HF_TOKEN[-8:] if HF_TOKEN and HF_TOKEN != 'your_hf_token_here' else 'NOT SET'}")
+    print(f"CivitAI Token: {'*' * 20}{CIVITAI_API_TOKEN[-8:] if CIVITAI_API_TOKEN else 'NOT SET'}")
     print(f"GitHub User: {GITHUB_USER}")
     print(f"GitHub Repo: {GITHUB_REPO}")
     print(f"ComfyUI Port: {COMFYUI_PORT}")
