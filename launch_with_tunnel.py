@@ -51,6 +51,23 @@ def install_cloudflared():
         print(f"❌ Installation failed: {e}")
         return False
 
+def cleanup_port():
+    """Kill any process using port 8188"""
+    print("\n🧹 Cleaning up port 8188...")
+    try:
+        # Find and kill process on port 8188
+        result = subprocess.run(
+            "lsof -ti:8188 | xargs kill -9 2>/dev/null || fuser -k 8188/tcp 2>/dev/null || true",
+            shell=True,
+            capture_output=True,
+            timeout=5
+        )
+        print("✅ Port 8188 is now free")
+    except Exception as e:
+        print(f"⚠️ Port cleanup: {e} (probably already free)")
+    
+    time.sleep(1)
+
 def start_comfyui():
     """Start ComfyUI in background"""
     print("\n🚀 Starting ComfyUI...")
@@ -58,7 +75,11 @@ def start_comfyui():
     comfyui_dir = "/kaggle/working/ComfyUI"
     if not os.path.exists(comfyui_dir):
         print(f"❌ ComfyUI not found at {comfyui_dir}")
+        print(f"💡 Run the installer first: bash install_comfyui_auto.sh")
         sys.exit(1)
+    
+    # Clean up any existing process on port 8188
+    cleanup_port()
     
     # Start ComfyUI
     os.chdir(comfyui_dir)
@@ -71,36 +92,24 @@ def start_comfyui():
         "--force-fp16"
     ]
     
-    process = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        bufsize=1
-    )
+    print(f"⏳ Launching ComfyUI (this will take 20-30 seconds)...")
+    print(f"Command: {' '.join(cmd)}\n")
     
-    # Wait for server to start
-    print("⏳ Waiting for ComfyUI to start...")
-    max_wait = 60
-    start_time = time.time()
+    # Don't hide output - let user see what's happening
+    process = subprocess.Popen(cmd)
     
-    while time.time() - start_time < max_wait:
-        try:
-            response = requests.get("http://localhost:8188", timeout=1)
-            if response.status_code == 200:
-                print("✅ ComfyUI started successfully")
-                return process
-        except:
-            pass
-        
-        # Check if process died
-        if process.poll() is not None:
-            print("❌ ComfyUI failed to start")
-            sys.exit(1)
-        
-        time.sleep(2)
+    # Give it a moment to start
+    time.sleep(10)
     
-    print("⚠️ ComfyUI may not have started, but continuing anyway...")
+    # Check if process died immediately
+    if process.poll() is not None:
+        print("\n❌ ComfyUI process terminated unexpectedly")
+        print("Check the error messages above")
+        sys.exit(1)
+    
+    print("\n✅ ComfyUI is starting (output will appear above)")
+    print("⏳ Waiting for server to be ready...")
+    
     return process
 
 def create_tunnel():
