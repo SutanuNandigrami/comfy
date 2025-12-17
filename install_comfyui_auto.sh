@@ -69,8 +69,10 @@ pip install -q \
   --index-url https://download.pytorch.org/whl/cu118 \
   --use-deprecated=legacy-resolver 2>&1 | grep -v "ERROR: pip" || true
 
+
 pip install -q xformers==0.0.33.post2 --no-deps
 pip install -q numpy==1.26.4 protobuf==4.25.3 --force-reinstall 2>&1 | grep -v "ERROR: pip" || true
+pip install -q torchsde  # Required by ComfyUI samplers
 
 # ==========================================================
 # === SANITY CHECK (ADDITIVE) ===============================
