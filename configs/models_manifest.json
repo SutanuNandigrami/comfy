@@ -179,8 +179,8 @@
   },
   "loras": {
     "add_detail_xl.safetensors": {
-      "url": "https://huggingface.co/latent-consistency/add-detail-xl/resolve/main/add_detail_xl.safetensors",
-      "auth": "hf",
+      "url": "https://huggingface.co/jyoung105/general-lora/resolve/main/add-detail-xl.safetensors",
+      "auth": "none",
       "min_size": 100000000,
       "sha256": "IGNORE",
       "modes": [
@@ -189,24 +189,24 @@
       ]
     },
     "face_helper_sdxl_v1.safetensors": {
-      "url": "https://huggingface.co/0x4BID/face-helper/resolve/main/face-helper-xl-v1.safetensors",
-      "auth": "hf",
+      "url": "https://civitai.com/api/download/models/156163",
+      "auth": "none",
       "min_size": 120000000,
       "sha256": "IGNORE",
       "modes": [
         "full"
       ],
-      "note": "Face Helper - realistic faces in close-ups"
+      "note": "Face Helper from CivitAI (HF repo gated)"
     },
     "cinematic_lighting_xl.safetensors": {
-      "url": "https://huggingface.co/artificialguybr/SDXL-LoRA-slider.cinematic-lighting/resolve/main/SDXL-LoRA-slider.cinematic-lighting.safetensors",
-      "auth": "hf",
+      "url": "https://civitai.com/api/download/models/135867",
+      "auth": "none",
       "min_size": 50000000,
       "sha256": "IGNORE",
       "modes": [
         "full"
       ],
-      "note": "Cinematic lighting slider LoRA"
+      "note": "Cinematic lighting from CivitAI (HF repo gated)"
     },
     "lcm_lora_sdxl.safetensors": {
       "url": "https://huggingface.co/latent-consistency/lcm-lora-sdxl/resolve/main/pytorch_lora_weights.safetensors",
