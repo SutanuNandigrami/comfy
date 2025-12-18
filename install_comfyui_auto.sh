@@ -428,6 +428,35 @@ fi
 # === Install ComfyUI requirements ===
 pip install -q -r requirements.txt || echo "[WARN] No requirements.txt found"
 
+# === CREATE EXTRA MODEL PATHS CONFIG ===
+# This tells ComfyUI where to find models in our cache
+echo "[INFO] Configuring model paths for ComfyUI..."
+cat > "$COMFYUI_DIR/extra_model_paths.yaml" <<EOF_PATHS
+# ComfyUI Model Paths Configuration
+# Points ComfyUI to our centralized model cache
+
+comfyui:
+  base_path: $CACHE_ROOT
+  checkpoints: checkpoints
+  clip: clip
+  clip_vision: clip_vision
+  configs: configs
+  controlnet: controlnet
+  embeddings: embeddings
+  loras: loras
+  upscale_models: upscale_models
+  vae: vae
+  vae_approx: vae_approx
+  diffusion_models: unet
+  style_models: style_models
+  photomaker: photomaker
+  animatediff_models: animatediff
+  animatediff_motion_lora: animatediff
+  video_formats: video
+EOF_PATHS
+
+echo "✅ Model paths configured: $CACHE_ROOT"
+
 # ------------------ CUSTOM NODES ------------------
 echo "=== Installing Custom Nodes ==="
 cd custom_nodes
@@ -476,24 +505,28 @@ done
 
 # ------------------ DEPLOY WORKFLOWS ------------------
 echo "=== Deploying Workflows ==="
-WORKFLOWS_SRC="$(dirname "$0")/workflows"
+
+# Get absolute path to script directory first (before we cd around)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+WORKFLOWS_SRC="$SCRIPT_DIR/workflows"
 WORKFLOWS_DEST="$COMFYUI_DIR/user/default/workflows"
 
 if [[ -d "$WORKFLOWS_SRC" ]]; then
   mkdir -p "$WORKFLOWS_DEST"
   
   # Copy all workflow JSON files
-  WORKFLOW_COUNT=$(find "$WORKFLOWS_SRC" -name "*.json" | wc -l)
+  WORKFLOW_COUNT=$(find "$WORKFLOWS_SRC" -name "*.json" 2>/dev/null | wc -l)
   
   if [[ $WORKFLOW_COUNT -gt 0 ]]; then
-    cp "$WORKFLOWS_SRC"/*.json "$WORKFLOWS_DEST"/
+    cp "$WORKFLOWS_SRC"/*.json "$WORKFLOWS_DEST"/ 2>/dev/null || echo "[WARN] Some workflows failed to copy"
     echo "✅ Deployed $WORKFLOW_COUNT workflows to ComfyUI"
     echo "   Location: $WORKFLOWS_DEST"
   else
-    echo "⚠️  No workflow files found in "$WORKFLOWS_SRC""
+    echo "⚠️  No workflow files found in $WORKFLOWS_SRC"
   fi
 else
-  echo "⚠️  Workflows directory not found: "$WORKFLOWS_SRC""
+  echo "⚠️  Workflows directory not found: $WORKFLOWS_SRC"
+  echo "   Script dir: $SCRIPT_DIR"
 fi
 
 # === Models managed by manifest (see lines 121-146) ===

@@ -59,13 +59,13 @@ for model in nsfw_models['items']:
 
 1. **Local Development**: Add to `.env` file
    ```bash
-   CIVITAI_API_TOKEN=a6dc83caf78c819326bb21749ab33ea5
+   CIVITAI_API_TOKEN=your_civitai_api_token_here
    ```
 
 2. **Kaggle Notebook**: Set in a cell
    ```python
    import os
-   os.environ['CIVITAI_API_TOKEN'] = 'a6dc83caf78c819326bb21749ab33ea5'
+   os.environ['CIVITAI_API_TOKEN'] = 'your_civitai_api_token_here'
    ```
 
 3. **Google Colab**: Add to secrets or set in cell
@@ -73,12 +73,12 @@ for model in nsfw_models['items']:
    from google.colab import userdata
    os.environ['CIVITAI_API_TOKEN'] = userdata.get('CIVITAI_API_TOKEN')
    # Or directly:
-   os.environ['CIVITAI_API_TOKEN'] = 'a6dc83caf78c819326bb21749ab33ea5'
+   os.environ['CIVITAI_API_TOKEN'] = 'your_civitai_api_token_here'
    ```
 
 ## Your Token
 ```
-a6dc83caf78c819326bb21749ab33ea5
+your_civitai_api_token_here
 ```
 
 Get more tokens or manage: https://civitai.com/user/account
