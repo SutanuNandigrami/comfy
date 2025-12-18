@@ -85,7 +85,7 @@ echo "=== Stabilizing Python environment ==="
 pip uninstall -y torch torchvision torchaudio xformers numpy protobuf 2>/dev/null || true
 
 pip install -q \
-  torch==2.6.0 \
+  torch==2.9.1 \
   torchvision==0.21.0 \
   torchaudio==2.6.0 \
   --index-url https://download.pytorch.org/whl/cu118 \
@@ -427,7 +427,6 @@ fi
 
 # === Install ComfyUI requirements ===
 pip install -q -r requirements.txt || echo "[WARN] No requirements.txt found"
-
 # === CREATE EXTRA MODEL PATHS CONFIG ===
 # This tells ComfyUI where to find models in our cache
 echo "[INFO] Configuring model paths for ComfyUI..."
@@ -505,28 +504,24 @@ done
 
 # ------------------ DEPLOY WORKFLOWS ------------------
 echo "=== Deploying Workflows ==="
-
-# Get absolute path to script directory first (before we cd around)
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-WORKFLOWS_SRC="$SCRIPT_DIR/workflows"
+WORKFLOWS_SRC="$(dirname "$0")/workflows"
 WORKFLOWS_DEST="$COMFYUI_DIR/user/default/workflows"
 
 if [[ -d "$WORKFLOWS_SRC" ]]; then
   mkdir -p "$WORKFLOWS_DEST"
   
   # Copy all workflow JSON files
-  WORKFLOW_COUNT=$(find "$WORKFLOWS_SRC" -name "*.json" 2>/dev/null | wc -l)
+  WORKFLOW_COUNT=$(find "$WORKFLOWS_SRC" -name "*.json" | wc -l)
   
   if [[ $WORKFLOW_COUNT -gt 0 ]]; then
-    cp "$WORKFLOWS_SRC"/*.json "$WORKFLOWS_DEST"/ 2>/dev/null || echo "[WARN] Some workflows failed to copy"
+    cp "$WORKFLOWS_SRC"/*.json "$WORKFLOWS_DEST"/
     echo "✅ Deployed $WORKFLOW_COUNT workflows to ComfyUI"
     echo "   Location: $WORKFLOWS_DEST"
   else
-    echo "⚠️  No workflow files found in $WORKFLOWS_SRC"
+    echo "⚠️  No workflow files found in "$WORKFLOWS_SRC""
   fi
 else
-  echo "⚠️  Workflows directory not found: $WORKFLOWS_SRC"
-  echo "   Script dir: $SCRIPT_DIR"
+  echo "⚠️  Workflows directory not found: "$WORKFLOWS_SRC""
 fi
 
 # === Models managed by manifest (see lines 121-146) ===
