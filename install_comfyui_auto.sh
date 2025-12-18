@@ -85,7 +85,7 @@ echo "=== Stabilizing Python environment ==="
 pip uninstall -y torch torchvision torchaudio xformers numpy protobuf 2>/dev/null || true
 
 pip install -q \
-  torch==2.9.1 \
+  torch==2.6.0 \
   torchvision==0.21.0 \
   torchaudio==2.6.0 \
   --index-url https://download.pytorch.org/whl/cu118 \
@@ -427,6 +427,7 @@ fi
 
 # === Install ComfyUI requirements ===
 pip install -q -r requirements.txt || echo "[WARN] No requirements.txt found"
+
 # === CREATE EXTRA MODEL PATHS CONFIG ===
 # This tells ComfyUI where to find models in our cache
 echo "[INFO] Configuring model paths for ComfyUI..."
@@ -504,7 +505,10 @@ done
 
 # ------------------ DEPLOY WORKFLOWS ------------------
 echo "=== Deploying Workflows ==="
-WORKFLOWS_SRC="$(dirname "$0")/workflows"
+
+# Get absolute path to script directory first (before we cd around)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+WORKFLOWS_SRC="$SCRIPT_DIR/workflows"
 WORKFLOWS_DEST="$COMFYUI_DIR/user/default/workflows"
 
 if [[ -d "$WORKFLOWS_SRC" ]]; then
