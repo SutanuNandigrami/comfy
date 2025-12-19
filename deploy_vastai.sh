@@ -39,8 +39,9 @@ fi
 
 echo "📊 Found $OFFER_COUNT matching offers, calculating total costs..."
 
-# Calculate total cost for each offer (GPU + 200GB disk)
+# Calculate total cost for each offer (GPU + 200GB disk + bandwidth estimate)
 DISK_GB=200
+BANDWIDTH_GB_ESTIMATE=50  # Estimate ~50GB download for ComfyUI setup
 BEST_TOTAL=999999
 BEST_OFFER_ID=""
 BEST_OFFER_INDEX=-1
@@ -49,12 +50,20 @@ for i in $(seq 0 $((OFFER_COUNT - 1))); do
   OFFER_ID=$(echo "$OFFERS" | jq -r ".[$i].id")
   GPU_COST=$(echo "$OFFERS" | jq -r ".[$i].dph_total")
   STORAGE_COST=$(echo "$OFFERS" | jq -r ".[$i].storage_cost")
+  INET_DOWN_COST=$(echo "$OFFERS" | jq -r ".[$i].inet_down_cost")
+  INET_UP_COST=$(echo "$OFFERS" | jq -r ".[$i].inet_up_cost")
   
   # Calculate disk cost per hour: (storage_cost * disk_GB) / 730
   DISK_HOURLY=$(awk "BEGIN {printf \"%.6f\", ($STORAGE_COST * $DISK_GB) / 730}")
-  TOTAL_COST=$(awk "BEGIN {printf \"%.6f\", $GPU_COST + $DISK_HOURLY}")
   
-  echo "  Offer $((i+1)): GPU \$$GPU_COST + Disk \$$DISK_HOURLY = \$$TOTAL_COST/hr"
+  # Calculate bandwidth cost estimate (one-time, but amortize over expected runtime)
+  # Assume 24hr runtime, so bandwidth_cost_per_gb * GB / 24
+  BANDWIDTH_HOURLY=$(awk "BEGIN {printf \"%.6f\", ($INET_DOWN_COST * $BANDWIDTH_GB_ESTIMATE) / 24}")
+  
+  # Total cost = GPU + Disk + Bandwidth
+  TOTAL_COST=$(awk "BEGIN {printf \"%.6f\", $GPU_COST + $DISK_HOURLY + $BANDWIDTH_HOURLY}")
+  
+  echo "  Offer $((i+1)): GPU \$$GPU_COST + Disk \$$DISK_HOURLY + BW \$$BANDWIDTH_HOURLY = \$$TOTAL_COST/hr"
   
   # Compare using awk (works in Git Bash)
   IS_BETTER=$(awk "BEGIN {print ($TOTAL_COST < $BEST_TOTAL) ? 1 : 0}")
@@ -84,6 +93,7 @@ OFFER_LOCATION=$(echo "$OFFERS" | jq -r ".[$BEST_OFFER_INDEX].geolocation")
 # Calculate final costs
 DISK_MONTHLY_COST=$(awk "BEGIN {printf \"%.4f\", $OFFER_STORAGE_COST * $DISK_GB}")
 DISK_HOURLY_COST=$(awk "BEGIN {printf \"%.6f\", $DISK_MONTHLY_COST / 730}")
+BANDWIDTH_EST=$(awk "BEGIN {printf \"%.6f\", ($OFFER_INET_DOWN_COST * $BANDWIDTH_GB_ESTIMATE) / 24}")
 TOTAL_HOURLY=$BEST_TOTAL
 
 echo "✅ Found offer:"
@@ -95,6 +105,7 @@ echo "  GPU Cost:       \$$(printf "%.4f" $OFFER_GPU_PRICE)/hr"
 echo "  Disk (${DISK_GB}GB): \$$(printf "%.4f" $DISK_HOURLY_COST)/hr (\$${OFFER_STORAGE_COST}/GB/month)"
 echo "  Download:       \$${OFFER_INET_DOWN_COST}/GB"
 echo "  Upload:         \$${OFFER_INET_UP_COST}/GB"
+echo "  BW Est (~${BANDWIDTH_GB_ESTIMATE}GB): \$$(printf "%.4f" $BANDWIDTH_EST)/hr"
 echo "  ────────────────────────"
 echo "  TOTAL:          \$$(printf "%.4f" $TOTAL_HOURLY)/hr"
 echo ""
