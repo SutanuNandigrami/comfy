@@ -51,13 +51,14 @@ for i in $(seq 0 $((OFFER_COUNT - 1))); do
   STORAGE_COST=$(echo "$OFFERS" | jq -r ".[$i].storage_cost")
   
   # Calculate disk cost per hour: (storage_cost * disk_GB) / 730
-  DISK_HOURLY=$(echo "scale=6; ($STORAGE_COST * $DISK_GB) / 730" | bc)
-  TOTAL_COST=$(echo "scale=6; $GPU_COST + $DISK_HOURLY" | bc)
+  DISK_HOURLY=$(awk "BEGIN {printf \"%.6f\", ($STORAGE_COST * $DISK_GB) / 730}")
+  TOTAL_COST=$(awk "BEGIN {printf \"%.6f\", $GPU_COST + $DISK_HOURLY}")
   
   echo "  Offer $((i+1)): GPU \$$GPU_COST + Disk \$$DISK_HOURLY = \$$TOTAL_COST/hr"
   
-  # Compare (bc returns 1 if true, 0 if false)
-  if (( $(echo "$TOTAL_COST < $BEST_TOTAL" | bc -l) )); then
+  # Compare using awk (works in Git Bash)
+  IS_BETTER=$(awk "BEGIN {print ($TOTAL_COST < $BEST_TOTAL) ? 1 : 0}")
+  if [ "$IS_BETTER" = "1" ]; then
     BEST_TOTAL=$TOTAL_COST
     BEST_OFFER_ID=$OFFER_ID
     BEST_OFFER_INDEX=$i
@@ -81,8 +82,8 @@ OFFER_INET_UP_COST=$(echo "$OFFERS" | jq -r ".[$BEST_OFFER_INDEX].inet_up_cost")
 OFFER_LOCATION=$(echo "$OFFERS" | jq -r ".[$BEST_OFFER_INDEX].geolocation")
 
 # Calculate final costs
-DISK_MONTHLY_COST=$(echo "scale=4; $OFFER_STORAGE_COST * $DISK_GB" | bc)
-DISK_HOURLY_COST=$(echo "scale=6; $DISK_MONTHLY_COST / 730" | bc)
+DISK_MONTHLY_COST=$(awk "BEGIN {printf \"%.4f\", $OFFER_STORAGE_COST * $DISK_GB}")
+DISK_HOURLY_COST=$(awk "BEGIN {printf \"%.6f\", $DISK_MONTHLY_COST / 730}")
 TOTAL_HOURLY=$BEST_TOTAL
 
 echo "✅ Found offer:"
@@ -186,6 +187,29 @@ echo "[INSTALL] Running ComfyUI installer..."
 bash install_comfyui_auto.sh \
   --hf-token="${HF_TOKEN}" \
   --civitai-token="${CIVITAI_TOKEN}"
+
+# Fix paths: ComfyUI runs from /workspace/ComfyUI but models are in /workspace/comfy
+echo "[FIX] Linking models to ComfyUI directory..."
+ln -sfn /workspace/comfy/models /workspace/ComfyUI/models
+ln -sfn /workspace/comfy/custom_nodes /workspace/ComfyUI/custom_nodes
+
+# Copy workflows to ComfyUI user directory
+echo "[FIX] Copying workflows..."
+mkdir -p /workspace/ComfyUI/user/default/workflows/
+cp -f /workspace/comfy/workflows/*.json /workspace/ComfyUI/user/default/workflows/ 2>/dev/null || true
+
+# Create extra_model_paths.yaml as backup
+cat > /workspace/ComfyUI/extra_model_paths.yaml << 'EOFPATHS'
+comfy:
+    base_path: /workspace/comfy/
+    checkpoints: models/checkpoints/
+    clip: models/clip/
+    clip_vision: models/clip_vision/
+    controlnet: models/controlnet/
+    loras: models/loras/
+    upscale_models: models/upscale_models/
+    vae: models/vae/
+EOFPATHS
 
 # Launch ComfyUI with ngrok tunnel
 echo "[LAUNCH] Starting ComfyUI with tunnel..."
