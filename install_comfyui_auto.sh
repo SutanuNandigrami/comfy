@@ -471,7 +471,9 @@ NODES=(
   https://github.com/pythongosssss/ComfyUI-Custom-Scripts
   https://github.com/WASasquatch/was-node-suite-comfyui
   https://github.com/rgthree/rgthree-comfy
-  https://github.com/Gourieff/ComfyUI-ReActor-Node
+  # Note: ComfyUI-ReActor-Node requires additional setup (authentication/model downloads)
+  # Skipping automatic installation - users can install manually if needed
+  # https://github.com/Gourieff/ComfyUI-ReActor-Node
   https://github.com/ssitu/ComfyUI_UltimateSDUpscale
   https://github.com/jags111/efficiency-nodes-comfyui
 )

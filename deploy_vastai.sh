@@ -161,7 +161,7 @@ fi
 mkdir -p /workspace
 cd /workspace
 
-# Google Drive sync (download from cloud to instance)
+# Optional: Cloud sync (requires VAST_CONNECTION_ID and VAST_INSTANCE_ID)
 CONNECTION_ID="${VAST_CONNECTION_ID:-}"
 INSTANCE_ID="${VAST_INSTANCE_ID:-}"
 
@@ -180,6 +180,9 @@ if [ -n "$CONNECTION_ID" ] && [ -n "$INSTANCE_ID" ]; then
     echo "[SYNC] Removing old comfy directory..."
     rm -rf /workspace/comfy
   fi
+else
+  echo "[INFO] Cloud sync disabled (no VAST_CONNECTION_ID set)"
+  echo "       Repository will be cloned from GitHub instead"
 fi
 
 # Clone/update repository
@@ -234,10 +237,19 @@ python launch_with_tunnel.py 2>&1 | tee /workspace/comfy_tunnel.log &
 # Give it time to start and print ngrok URL
 sleep 15
 
+# Start Jupyter Lab
+echo "[JUPYTER] Starting Jupyter Lab..."
+cd /workspace
+nohup jupyter lab --ip=0.0.0.0 --port=8080 --no-browser --allow-root \
+  --NotebookApp.token='' --NotebookApp.password='' \
+  > /workspace/jupyter.log 2>&1 &
+
 echo ""
 echo "✅ Setup complete!"
-echo "📂 Full log: /workspace/comfy_tunnel.log"
+echo "📂 ComfyUI log: /workspace/comfy_tunnel.log"
+echo "📂 Jupyter log: /workspace/jupyter.log"
 echo "🌐 Ngrok URL should be displayed above"
+echo "📓 Jupyter: Access via Vast.AI portal 'Jupyter' button"
 nvidia-smi || true
 EOF
 )
